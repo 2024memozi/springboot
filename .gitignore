@@ -35,4 +35,6 @@ out/
 
 ### VS Code ###
 .vscode/
-db.yml
+
+### Yml ###
+application.yml
