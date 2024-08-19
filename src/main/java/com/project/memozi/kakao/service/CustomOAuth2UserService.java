@@ -21,7 +21,6 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
     @Override
     public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
         String accessToken = userRequest.getAccessToken().getTokenValue();
-        System.out.println("Access Token: " + accessToken);
         OAuth2User oAuth2User = super.loadUser(userRequest);
         String kakaoId = String.valueOf(oAuth2User.getAttributes().get("id"));
         Map<String, Object> properties = (Map<String, Object>) oAuth2User.getAttributes().get("properties");
@@ -35,6 +34,6 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
                     return memberRepository.save(newMember);
                 });
 
-        return oAuth2User;
+        return new CustomUserDetails(member, oAuth2User.getAttributes());
     }
 }
