@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.project.memozi.kakao.entity.Member;
 import com.project.memozi.kakao.repository.MemberRepository;
 import com.project.memozi.util.JwtUtil;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
@@ -80,5 +81,25 @@ public class KakaoService {
 
     public String generateJwtForUser(Member member) {
         return jwtUtil.generateToken(member.getNickname());
+    }
+
+    @Transactional
+    public void deleteMember(Member member,String accessToken){
+        unlinkKakao(accessToken);
+        memberRepository.delete(member);
+    }
+
+    public void unlinkKakao(String accessToken) {
+        String url = "https://kapi.kakao.com/v1/user/unlink";
+        RestTemplate restTemplate = new RestTemplate();
+        HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.setBearerAuth(accessToken);
+        HttpEntity<Void> request = new HttpEntity<>(httpHeaders);
+
+        try {
+            restTemplate.postForEntity(url, request, String.class);
+        } catch (Exception e) {
+            throw new RuntimeException("카카오 연결 해제 실패", e);
+        }
     }
 }
