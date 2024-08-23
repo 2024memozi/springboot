@@ -2,6 +2,9 @@ package com.project.memozi.kakao.service;
 
 import com.project.memozi.kakao.entity.Member;
 import com.project.memozi.kakao.repository.MemberRepository;
+import org.springframework.security.oauth2.client.OAuth2AuthorizedClient;
+import org.springframework.security.oauth2.client.OAuth2AuthorizedClientService;
+import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
@@ -13,14 +16,15 @@ import java.util.Map;
 @Service
 public class CustomOAuth2UserService extends DefaultOAuth2UserService {
     private final MemberRepository memberRepository;
+    private final OAuth2AuthorizedClientService oauth2AuthorizedClientService;
 
-    public CustomOAuth2UserService(MemberRepository memberRepository) {
+    public CustomOAuth2UserService(MemberRepository memberRepository, OAuth2AuthorizedClientService oauth2AuthorizedClientService) {
         this.memberRepository = memberRepository;
+        this.oauth2AuthorizedClientService = oauth2AuthorizedClientService;
     }
 
     @Override
     public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
-        String accessToken = userRequest.getAccessToken().getTokenValue();
         OAuth2User oAuth2User = super.loadUser(userRequest);
         String kakaoId = String.valueOf(oAuth2User.getAttributes().get("id"));
         Map<String, Object> properties = (Map<String, Object>) oAuth2User.getAttributes().get("properties");
@@ -35,5 +39,13 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
                 });
 
         return new CustomUserDetails(member, oAuth2User.getAttributes());
+    }
+
+    public String getAccessToken(OAuth2AuthenticationToken authentication) {
+        OAuth2AuthorizedClient client = oauth2AuthorizedClientService.loadAuthorizedClient(
+                authentication.getAuthorizedClientRegistrationId(),
+                authentication.getName());
+
+        return client.getAccessToken().getTokenValue();
     }
 }
