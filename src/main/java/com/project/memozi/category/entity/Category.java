@@ -25,6 +25,8 @@ public class Category {
     private String name;
 
     @ElementCollection
+    @CollectionTable(name = "category_images", joinColumns = @JoinColumn(name = "category_id"))
+    @Column(name = "images_url")
     private List<String> images = new ArrayList<>();
 
     @ManyToOne(fetch=FetchType.LAZY)
