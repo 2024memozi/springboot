@@ -3,6 +3,7 @@ package com.project.memozi.category.entity;
 import com.project.memozi.category.dto.CategoryRequestDto;
 import com.project.memozi.color.entity.Color;
 import com.project.memozi.kakao.entity.Member;
+import com.project.memozi.memo.entity.Memo;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -40,6 +41,9 @@ public class Category {
     @ManyToOne
     @JoinColumn(name = "txtcolor_id")
     private Color txtcolor;
+
+    @OneToMany(mappedBy = "category", cascade = CascadeType.REMOVE)
+    private List <Memo> memos;
 
     public Category(CategoryRequestDto categoryRequestDto, Member member) {
         this.name = categoryRequestDto.getName();
