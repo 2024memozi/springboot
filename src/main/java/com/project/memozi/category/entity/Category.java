@@ -30,6 +30,9 @@ public class Category {
     @Column(name = "images_url")
     private List<String> images = new ArrayList<>();
 
+    @Column(name = "represent_image")
+    private String representImage;
+
     @ManyToOne(fetch=FetchType.LAZY)
     @JoinColumn(name = "member_id")
     private Member member;

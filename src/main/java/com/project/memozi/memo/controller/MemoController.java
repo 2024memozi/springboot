@@ -8,21 +8,26 @@ import com.project.memozi.memo.service.MemoService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
 public class MemoController {
     private final MemoService memoService;
 
-    @PostMapping("{categoryId}/memo")
+    @PostMapping("/memo/{categoryId}")
     public ResponseEntity<MemoResponseDto> postMemo(@PathVariable Long categoryId, @RequestBody MemoRequestDto memoRequestDto, @AuthenticationPrincipal CustomUserDetails customUserDetails){
         Member member = customUserDetails.getMember();
         MemoResponseDto memoResponseDto = memoService.addMemo(categoryId,memoRequestDto,member);
         return ResponseEntity.ok(memoResponseDto);
     }
+
+//    @GetMapping("/memo/{categoryId}")
+//    public ResponseEntity<List<MemoResponseDto>>getMemos(@PathVariable Long categoryId){
+//        List<MemoResponseDto> memoLists = memoService.getMemos(categoryId);
+//        return ResponseEntity.ok(memoLists);
+//    }
 
 }

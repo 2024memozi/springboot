@@ -1,5 +1,6 @@
 package com.project.memozi.memo.dto;
 
+import com.project.memozi.category.entity.Category;
 import com.project.memozi.memo.entity.Memo;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

@@ -7,9 +7,12 @@ import com.project.memozi.memo.dto.MemoRequestDto;
 import com.project.memozi.memo.dto.MemoResponseDto;
 import com.project.memozi.memo.entity.Memo;
 import com.project.memozi.memo.repository.MemoRepository;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -25,4 +28,12 @@ public class MemoService {
         memoRepository.save(memo);
         return new MemoResponseDto(memo);
     }
+
+//    @Transactional (readOnly = true)
+//    public List<MemoResponseDto> getMemos(Long categoryId){
+//        List<Memo>memos = memoRepository.findByCategoryId(categoryId);
+//        return memos.stream()
+//                .map(MemoResponseDto::new)
+//                .collect(Collectors.toList());
+//    }
 }
