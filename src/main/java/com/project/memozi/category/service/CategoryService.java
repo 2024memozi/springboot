@@ -10,6 +10,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Service
 @RequiredArgsConstructor
 public class CategoryService {
@@ -22,10 +25,22 @@ public class CategoryService {
         return new CategoryResponseDto(category);
     }
 
+    @Transactional(readOnly = true)
+    public List<CategoryResponseDto> getAllCategories(Member member) {
+        return categoryRepository.findAllByMember(member).stream()
+                .map(CategoryResponseDto::new)
+                .collect(Collectors.toList());
+    }
+
     @Transactional(readOnly=true)
-    public CategoryDetailResponseDto getCategoryMemos(Long categoryId){
+    public CategoryDetailResponseDto getCategoryMemos(Long categoryId,Member member){
     Category category = categoryRepository.findById(categoryId)
             .orElseThrow(()->new IllegalArgumentException("해당 카테고리가 존재하지 않습니다"));
-        return new CategoryDetailResponseDto(category);
+
+    if (!category.getMember().getId().equals(member.getId())) {
+        throw new IllegalArgumentException("권한이 없습니다.");
+    }
+
+    return new CategoryDetailResponseDto(category);
     }
 }

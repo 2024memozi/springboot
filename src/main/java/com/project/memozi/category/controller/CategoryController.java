@@ -11,6 +11,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 
 @RestController
 @RequiredArgsConstructor
@@ -25,9 +27,17 @@ public class CategoryController {
         return ResponseEntity.ok(categoryResponseDto);
     }
 
+    @GetMapping
+    public ResponseEntity<List<CategoryResponseDto>> getAllCategory(@AuthenticationPrincipal CustomUserDetails customUserDetails){
+        Member member = customUserDetails.getMember();
+        List<CategoryResponseDto> categoryList = categoryService.getAllCategories(member);
+        return ResponseEntity.ok(categoryList);
+    }
+
     @GetMapping("/{categoryId}")
-    public ResponseEntity<CategoryDetailResponseDto>getCategoryMemo(@PathVariable Long categoryId){
-        CategoryDetailResponseDto categoryDetailResponseDto = categoryService.getCategoryMemos(categoryId);
+    public ResponseEntity<CategoryDetailResponseDto>getCategoryMemo(@PathVariable Long categoryId,@AuthenticationPrincipal CustomUserDetails customUserDetails){
+        Member member = customUserDetails.getMember();
+        CategoryDetailResponseDto categoryDetailResponseDto = categoryService.getCategoryMemos(categoryId,member);
         return ResponseEntity.ok(categoryDetailResponseDto);
     }
 }
