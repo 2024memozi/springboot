@@ -32,6 +32,13 @@ public class MemoController {
         return ResponseEntity.ok(memoResponseDto);
     }
 
+    @PutMapping("/{categoryId}/{memoId}")
+    public ResponseEntity<MemoResponseDto> updateMemo(@PathVariable Long categoryId, @PathVariable Long memoId, @RequestBody MemoRequestDto memoRequestDto, @AuthenticationPrincipal CustomUserDetails customUserDetails){
+        Member member = customUserDetails.getMember();
+        MemoResponseDto memoResponseDto = memoService.updateMemo(categoryId, memoId, memoRequestDto, member);
+        return ResponseEntity.ok(memoResponseDto);
+    }
+
     @DeleteMapping("{categoryId}/{memoId}")
     public ResponseEntity<?> deleteMemo(@PathVariable Long categoryId, @PathVariable Long memoId, @AuthenticationPrincipal CustomUserDetails customUserDetails){
         Member member = customUserDetails.getMember();

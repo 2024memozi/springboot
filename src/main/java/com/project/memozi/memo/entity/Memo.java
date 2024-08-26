@@ -55,4 +55,9 @@ public class Memo extends TimeStamped {
         this.member = member;
     }
 
+    public void update(MemoRequestDto memoRequestDto){
+        this.title = memoRequestDto.getTitle();
+        this.content = memoRequestDto.getContent();
+    }
+
 }
