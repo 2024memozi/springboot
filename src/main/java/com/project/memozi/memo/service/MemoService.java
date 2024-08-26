@@ -42,6 +42,20 @@ public class MemoService {
     }
 
     @Transactional
+    public MemoResponseDto updateMemo(Long categoryId, Long memoId, MemoRequestDto memoRequestDto, Member member){
+        Memo memo = memoRepository.findByIdAndCategoryId(memoId,categoryId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 메모가 존재하지 않습니다"));
+
+        if (!memo.getMember().getId().equals(member.getId())) {
+            throw new IllegalArgumentException("권한이 없습니다.");
+        }
+
+        memo.update(memoRequestDto);
+        memoRepository.save(memo);
+        return new MemoResponseDto(memo);
+    }
+
+    @Transactional
     public void deleteMemo(Long categoryId, Long memoId, Member member){
         Memo memo = memoRepository.findByIdAndCategoryId(memoId,categoryId)
                 .orElseThrow(() -> new IllegalArgumentException("해당 메모가 존재하지 않습니다"));
