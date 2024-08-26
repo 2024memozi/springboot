@@ -7,6 +7,7 @@ import com.project.memozi.diary.repository.DiaryRepository;
 import com.project.memozi.kakao.entity.Member;
 import com.project.memozi.s3.S3Uploader;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -20,6 +21,9 @@ import java.util.List;
 public class DiaryService {
     private final DiaryRepository diaryRepository;
     private final S3Uploader s3Uploader;
+
+    @Value("${spring.cloud.aws.s3.bucket-url}")
+    private String bucketUrl;
 
     @Transactional
     public DiaryResponseDto addDiary(List<MultipartFile> images, DiaryRequestDto diaryRequestDto, Member member) throws IOException {
@@ -94,5 +98,24 @@ public class DiaryService {
 
         diary.clearImages();
         diary.addImages(newImageUrls);
+    }
+
+    @Transactional
+    public void deleteDiary(Long diaryId, Member member) {
+        Diary diary = diaryRepository.findById(diaryId).orElseThrow(
+                ()->new IllegalArgumentException("해당 다이어리가 존재하지 않습니다.")
+        );
+
+        if (!diary.getMember().getId().equals(member.getId())) {
+            throw new IllegalArgumentException("권한이 없습니다");
+        }
+
+        if (diary.getImages() != null && !diary.getImages().isEmpty()) {
+            for (String imageUrl : diary.getImages()) {
+                String fileName = imageUrl.replace(bucketUrl, "");
+                s3Uploader.deleteFile(fileName);
+            }
+        }
+        diaryRepository.delete(diary);
     }
 }

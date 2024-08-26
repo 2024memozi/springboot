@@ -1,7 +1,6 @@
 package com.project.memozi.s3;
 
 import com.amazonaws.services.s3.AmazonS3Client;
-import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import lombok.RequiredArgsConstructor;
@@ -9,8 +8,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.UUID;
@@ -48,7 +45,11 @@ public class S3Uploader {
     }
 
     public void deleteFile(String fileName) {
-        amazonS3Client.deleteObject(bucket,fileName);
+        try {
+            amazonS3Client.deleteObject(bucket, fileName);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public String updateFile(MultipartFile newFile, String oldFileName, String dirName)throws IOException{

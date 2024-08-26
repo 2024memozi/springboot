@@ -2,6 +2,7 @@ package com.project.memozi.diary.controller;
 
 import com.project.memozi.diary.dto.DiaryRequestDto;
 import com.project.memozi.diary.dto.DiaryResponseDto;
+import com.project.memozi.diary.entity.Diary;
 import com.project.memozi.diary.service.DiaryService;
 import com.project.memozi.kakao.service.CustomUserDetails;
 import lombok.RequiredArgsConstructor;
@@ -51,6 +52,12 @@ public class DiaryController {
         DiaryRequestDto diaryRequestDto = new DiaryRequestDto(title,content,location);
         DiaryResponseDto diaryResponseDto = diaryService.updateDiary(images, diaryId, diaryRequestDto, customUserDetails.getMember());
         return ResponseEntity.ok().body(diaryResponseDto);
+    }
+
+    @DeleteMapping("/{diaryId}")
+    public ResponseEntity<?> deleteDiary(@PathVariable Long diaryId, @AuthenticationPrincipal CustomUserDetails customeUserDetails){
+        diaryService.deleteDiary(diaryId,customeUserDetails.getMember());
+        return ResponseEntity.ok().body("다이어리가 삭제되었습니다");
     }
 
 }
