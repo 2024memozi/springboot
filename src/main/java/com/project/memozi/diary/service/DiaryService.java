@@ -49,5 +49,17 @@ public class DiaryService {
         return diaryResponseDto;
     }
 
+    @Transactional(readOnly = true)
+    public DiaryResponseDto getDetailDiary (Long diaryId, Member member){
+        Diary diary = diaryRepository.findById(diaryId)
+                .orElseThrow(()-> new IllegalArgumentException("해당 다이어리가 없습니다"));
+
+        if(!diary.getMember().getId().equals(member.getId())) {
+            throw new IllegalArgumentException("권한이 없습니다");
+        }
+
+        return new DiaryResponseDto(diary);
+    }
+
 
 }

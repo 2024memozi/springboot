@@ -36,4 +36,10 @@ public class DiaryController {
         return ResponseEntity.ok().body(diaryResponseDto);
     }
 
+    @GetMapping("/{diaryId}")
+    public ResponseEntity<DiaryResponseDto> getDetailDiary(@PathVariable Long diaryId, @AuthenticationPrincipal CustomUserDetails customUserDetails){
+        DiaryResponseDto diaryResponseDto = diaryService.getDetailDiary(diaryId, customUserDetails.getMember());
+        return ResponseEntity.ok().body(diaryResponseDto);
+    }
+
 }
