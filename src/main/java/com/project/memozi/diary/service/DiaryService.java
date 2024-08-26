@@ -22,13 +22,13 @@ public class DiaryService {
     private final S3Uploader s3Uploader;
 
     @Transactional
-    public DiaryResponseDto addDiary(List<MultipartFile> images, DiaryRequestDto diaryRequestDto, Member member) throws IOException{
+    public DiaryResponseDto addDiary(List<MultipartFile> images, DiaryRequestDto diaryRequestDto, Member member) throws IOException {
         Diary diary = new Diary(diaryRequestDto, member);
         if (!diary.getMember().getId().equals(member.getId())) {
             throw new IllegalArgumentException("권한이 없습니다.");
         }
         List<String> imagesUrls = new ArrayList<>();
-        if(images !=null && !images.isEmpty()) {
+        if (images != null && !images.isEmpty()) {
             for (MultipartFile image : images) {
                 String imagesUrl = s3Uploader.upload(image, "image");
                 imagesUrls.add(imagesUrl);
@@ -40,26 +40,59 @@ public class DiaryService {
     }
 
     @Transactional(readOnly = true)
-    public List<DiaryResponseDto> getDiary (Member member){
-        List<Diary>diaries = diaryRepository.findAllByOrderByCreatedAtDesc();
+    public List<DiaryResponseDto> getDiary(Member member) {
+        List<Diary> diaries = diaryRepository.findAllByOrderByCreatedAtDesc();
         List<DiaryResponseDto> diaryResponseDto = new ArrayList<>();
-        for (Diary diary : diaries){
+        for (Diary diary : diaries) {
             diaryResponseDto.add(new DiaryResponseDto(diary));
         }
         return diaryResponseDto;
     }
 
     @Transactional(readOnly = true)
-    public DiaryResponseDto getDetailDiary (Long diaryId, Member member){
+    public DiaryResponseDto getDetailDiary(Long diaryId, Member member) {
         Diary diary = diaryRepository.findById(diaryId)
-                .orElseThrow(()-> new IllegalArgumentException("해당 다이어리가 없습니다"));
+                .orElseThrow(() -> new IllegalArgumentException("해당 다이어리가 존재하지 않습니다."));
 
-        if(!diary.getMember().getId().equals(member.getId())) {
+        if (!diary.getMember().getId().equals(member.getId())) {
             throw new IllegalArgumentException("권한이 없습니다");
         }
 
         return new DiaryResponseDto(diary);
     }
 
+    @Transactional
+    public DiaryResponseDto updateDiary(List<MultipartFile> images, Long diaryId, DiaryRequestDto diaryRequestDto, Member member)throws IOException {
+        Diary diary = diaryRepository.findById(diaryId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 다이어리가 존재하지 않습니다."));
 
+        if (!diary.getMember().getId().equals(member.getId())) {
+            throw new IllegalArgumentException("권한이 없습니다");
+        }
+
+        if (images != null && !images.isEmpty()) {
+            updateDiaryImages(diary, images);
+        }
+
+        diary.update(diaryRequestDto);
+        diaryRepository.save(diary);
+        return new DiaryResponseDto(diary);
+    }
+
+    private void updateDiaryImages(Diary diary, List<MultipartFile> images) throws IOException{
+        List<String> oldImageUrls = diary.getImages();
+        for (String oldImageUrl : oldImageUrls) {
+            String fileName = oldImageUrl.substring(oldImageUrl.lastIndexOf("com") + 4);
+            s3Uploader.deleteFile(fileName);
+        }
+
+        List<String> newImageUrls = new ArrayList<>();
+        for (MultipartFile image : images) {
+            String newImageUrl = s3Uploader.upload(image, "image");
+            newImageUrls.add(newImageUrl);
+        }
+
+        diary.clearImages();
+        diary.addImages(newImageUrls);
+    }
 }

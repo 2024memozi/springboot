@@ -42,4 +42,15 @@ public class DiaryController {
         return ResponseEntity.ok().body(diaryResponseDto);
     }
 
+    @PutMapping("/{diaryId}")
+    public ResponseEntity<DiaryResponseDto> updateDetailDiary(@RequestPart(value = "images", required = false) List<MultipartFile> images,
+                                                              @RequestParam(required = false) String title,
+                                                              @RequestParam(required = false) String content,
+                                                              @RequestParam(required = false) String location,
+                                                              @PathVariable Long diaryId, @AuthenticationPrincipal CustomUserDetails customUserDetails)throws IOException{
+        DiaryRequestDto diaryRequestDto = new DiaryRequestDto(title,content,location);
+        DiaryResponseDto diaryResponseDto = diaryService.updateDiary(images, diaryId, diaryRequestDto, customUserDetails.getMember());
+        return ResponseEntity.ok().body(diaryResponseDto);
+    }
+
 }
