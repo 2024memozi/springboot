@@ -42,6 +42,13 @@ public class CategoryController {
         return ResponseEntity.ok(categoryDetailResponseDto);
     }
 
+    @PutMapping("/{categoryId}")
+    public ResponseEntity<CategoryResponseDto>updateCategory(@PathVariable Long categoryId, @RequestBody CategoryRequestDto categoryRequestDto, @AuthenticationPrincipal CustomUserDetails customUserDetails){
+        Member member = customUserDetails.getMember();
+        CategoryResponseDto categoryResponseDto = categoryService.updateCategory(categoryId, categoryRequestDto, member);
+        return ResponseEntity.ok(categoryResponseDto);
+    }
+
     @DeleteMapping("{categoryId}")
     public ResponseEntity<?> deleteCategory (@PathVariable Long categoryId, @AuthenticationPrincipal CustomUserDetails customUserDetails){
         Member member = customUserDetails.getMember();

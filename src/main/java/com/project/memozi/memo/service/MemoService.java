@@ -29,11 +29,29 @@ public class MemoService {
         return new MemoResponseDto(memo);
     }
 
-//    @Transactional (readOnly = true)
-//    public List<MemoResponseDto> getMemos(Long categoryId){
-//        List<Memo>memos = memoRepository.findByCategoryId(categoryId);
-//        return memos.stream()
-//                .map(MemoResponseDto::new)
-//                .collect(Collectors.toList());
-//    }
+    @Transactional (readOnly = true)
+    public MemoResponseDto getMemo(Long categoryId, Long memoId, Member member) {
+        Memo memo = memoRepository.findByIdAndCategoryId(memoId,categoryId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 메모가 존재하지 않습니다"));
+
+        if (!memo.getMember().getId().equals(member.getId())) {
+            throw new IllegalArgumentException("권한이 없습니다.");
+        }
+
+        return new MemoResponseDto(memo);
+    }
+
+    @Transactional
+    public void deleteMemo(Long categoryId, Long memoId, Member member){
+        Memo memo = memoRepository.findByIdAndCategoryId(memoId,categoryId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 메모가 존재하지 않습니다"));
+
+        if (!memo.getMember().getId().equals(member.getId())) {
+            throw new IllegalArgumentException("권한이 없습니다.");
+        }
+
+        memoRepository.delete(memo);
+    }
+
+
 }

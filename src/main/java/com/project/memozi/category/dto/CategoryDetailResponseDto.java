@@ -15,6 +15,8 @@ import java.util.stream.Collectors;
 public class CategoryDetailResponseDto {
     private String name;
     private String representImageUrl;
+    private String bgColor;
+    private String txtColor;
     private List<MemoResponseDto> memos;
 
     public CategoryDetailResponseDto(Category category) {
