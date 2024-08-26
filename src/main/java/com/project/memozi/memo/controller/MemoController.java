@@ -14,20 +14,22 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
+@RequestMapping("/memo")
 public class MemoController {
     private final MemoService memoService;
 
-    @PostMapping("/memo/{categoryId}")
+    @PostMapping("/{categoryId}")
     public ResponseEntity<MemoResponseDto> postMemo(@PathVariable Long categoryId, @RequestBody MemoRequestDto memoRequestDto, @AuthenticationPrincipal CustomUserDetails customUserDetails){
         Member member = customUserDetails.getMember();
         MemoResponseDto memoResponseDto = memoService.addMemo(categoryId,memoRequestDto,member);
         return ResponseEntity.ok(memoResponseDto);
     }
 
-//    @GetMapping("/memo/{categoryId}")
-//    public ResponseEntity<List<MemoResponseDto>>getMemos(@PathVariable Long categoryId){
-//        List<MemoResponseDto> memoLists = memoService.getMemos(categoryId);
-//        return ResponseEntity.ok(memoLists);
-//    }
+    @GetMapping("/{categoryId}/{memoId}")
+    public ResponseEntity<MemoResponseDto>getMemo(@PathVariable Long categoryId, @PathVariable Long memoId, @AuthenticationPrincipal CustomUserDetails customUserDetails){
+        Member member = customUserDetails.getMember();
+        MemoResponseDto memoResponseDto = memoService.getMemo(categoryId,memoId,member);
+        return ResponseEntity.ok(memoResponseDto);
+    }
 
 }
