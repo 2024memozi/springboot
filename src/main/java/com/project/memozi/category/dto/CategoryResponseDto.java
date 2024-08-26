@@ -1,9 +1,13 @@
 package com.project.memozi.category.dto;
 
 import com.project.memozi.category.entity.Category;
+import com.project.memozi.memo.dto.MemoResponseDto;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @AllArgsConstructor
@@ -11,9 +15,18 @@ import lombok.NoArgsConstructor;
 public class CategoryResponseDto {
     private String name;
     private String representImageUrl;
+    private String bgColor;
+    private String txtColor;
+    private List<MemoResponseDto>memo = new ArrayList<>();
 
     public CategoryResponseDto(Category category) {
         this.name = category.getName();
         this.representImageUrl = category.getRepresentImage();
+        this.bgColor = category.getBgcolor() != null ? category.getBgcolor().getCode() : null;
+        this.txtColor = category.getTxtcolor() != null ? category.getTxtcolor().getCode() : null;
+    }
+
+    public void setMemo(List<MemoResponseDto> memo){
+        this.memo = memo;
     }
 }
