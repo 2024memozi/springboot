@@ -9,7 +9,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.time.format.TextStyle;
 import java.util.Locale;
 
@@ -43,7 +43,7 @@ public class Memo extends TimeStamped {
     @PrePersist
     @PreUpdate
     private void setDay(){
-        LocalDateTime dateTime = getUpdatedAt() != null ? getUpdatedAt() : getCreatedAt();
+        LocalDate dateTime = getUpdatedAt() != null ? getUpdatedAt() : getCreatedAt();
         this.dayOfWeek = dateTime.getDayOfWeek()
                 .getDisplayName(TextStyle.FULL, Locale.KOREAN);
     }

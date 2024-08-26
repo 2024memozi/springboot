@@ -2,7 +2,6 @@ package com.project.memozi.diary.controller;
 
 import com.project.memozi.diary.dto.DiaryRequestDto;
 import com.project.memozi.diary.dto.DiaryResponseDto;
-import com.project.memozi.diary.entity.Diary;
 import com.project.memozi.diary.service.DiaryService;
 import com.project.memozi.kakao.service.CustomUserDetails;
 import lombok.RequiredArgsConstructor;

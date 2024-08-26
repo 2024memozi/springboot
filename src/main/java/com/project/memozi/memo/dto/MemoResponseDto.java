@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Getter
@@ -15,8 +16,8 @@ public class MemoResponseDto {
     private String title;
     private String content;
     private String dayOfWeek;
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
+    private LocalDate createdAt;
+    private LocalDate updatedAt;
 
     public MemoResponseDto(Memo memo){
         this.title = memo.getTitle();

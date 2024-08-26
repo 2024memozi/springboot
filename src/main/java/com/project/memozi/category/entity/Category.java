@@ -25,12 +25,7 @@ public class Category {
     @Column(nullable = false)
     private String name;
 
-    @ElementCollection
-    @CollectionTable(name = "category_images", joinColumns = @JoinColumn(name = "category_id"))
-    @Column(name = "images_url")
-    private List<String> images = new ArrayList<>();
-
-    @Column(name = "represent_image")
+    @Column(nullable = false)
     private String representImage;
 
     @ManyToOne(fetch=FetchType.LAZY)
@@ -39,17 +34,20 @@ public class Category {
 
     @ManyToOne
     @JoinColumn(name = "bgcolor_id")
-    private Color bgcolor;
+    private Color bgColor;
 
     @ManyToOne
     @JoinColumn(name = "txtcolor_id")
-    private Color txtcolor;
+    private Color txtColor;
 
     @OneToMany(mappedBy = "category", cascade = CascadeType.REMOVE)
     private List <Memo> memos;
 
-    public Category(CategoryRequestDto categoryRequestDto, Member member) {
-        this.name = categoryRequestDto.getName();
+    public Category(String name, String representImage, Color bgColor, Color txtColor, Member member) {
+        this.name = name;
+        this.representImage = representImage;
+        this.bgColor = bgColor;
+        this.txtColor = txtColor;
         this.member = member;
     }
 }
