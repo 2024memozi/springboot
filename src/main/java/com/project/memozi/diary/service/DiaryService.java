@@ -38,4 +38,16 @@ public class DiaryService {
         diaryRepository.save(diary);
         return new DiaryResponseDto(diary);
     }
+
+    @Transactional(readOnly = true)
+    public List<DiaryResponseDto> getDiary (Member member){
+        List<Diary>diaries = diaryRepository.findAllByOrderByCreatedAtDesc();
+        List<DiaryResponseDto> diaryResponseDto = new ArrayList<>();
+        for (Diary diary : diaries){
+            diaryResponseDto.add(new DiaryResponseDto(diary));
+        }
+        return diaryResponseDto;
+    }
+
+
 }

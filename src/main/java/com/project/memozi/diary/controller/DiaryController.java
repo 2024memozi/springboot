@@ -29,4 +29,10 @@ public class DiaryController {
         return ResponseEntity.ok().body(diaryResponseDto);
     }
 
+    @GetMapping
+    public ResponseEntity<List<DiaryResponseDto>> getAllDiary(@AuthenticationPrincipal CustomUserDetails customUserDetails){
+        List<DiaryResponseDto> diaryResponseDto = diaryService.getDiary(customUserDetails.getMember());
+        return ResponseEntity.ok().body(diaryResponseDto);
+    }
+
 }

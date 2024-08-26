@@ -8,8 +8,11 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
+import java.time.format.TextStyle;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 @Entity
 @Getter
@@ -32,9 +35,19 @@ public class Diary extends TimeStamped {
     @Column(name = "images_url")
     private List<String> images = new ArrayList<>();
 
+    @Column(nullable = false)
+    private String dayOfWeek;
+
     @ManyToOne(fetch=FetchType.LAZY)
     @JoinColumn(name = "member_id")
     private Member member;
+
+    @PrePersist
+    @PreUpdate
+    private void setDay(){
+        this.dayOfWeek = getCreatedAt().getDayOfWeek()
+                .getDisplayName(TextStyle.FULL, Locale.KOREAN);
+    }
 
     public Diary(DiaryRequestDto diaryRequestDto, Member member){
         this.title = diaryRequestDto.getTitle();
