@@ -23,8 +23,9 @@ public class DiaryController {
     public ResponseEntity<DiaryResponseDto> addDiary (@RequestPart(value = "images", required = false) List<MultipartFile> images,
                                                       @RequestParam String title,
                                                       @RequestParam String content,
+                                                      @RequestParam(required = false) String location,
                                                       @AuthenticationPrincipal CustomUserDetails customUserDetails) throws IOException {
-        DiaryRequestDto diaryRequestDto = new DiaryRequestDto(title,content);
+        DiaryRequestDto diaryRequestDto = new DiaryRequestDto(title,content,location);
         DiaryResponseDto diaryResponseDto = diaryService.addDiary(images,diaryRequestDto,customUserDetails.getMember());
         return ResponseEntity.ok().body(diaryResponseDto);
     }

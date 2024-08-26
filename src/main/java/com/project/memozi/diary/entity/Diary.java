@@ -30,6 +30,8 @@ public class Diary extends TimeStamped {
     @Column(nullable = false)
     private String content;
 
+    private String location;
+
     @ElementCollection
     @CollectionTable(name = "diary_images", joinColumns = @JoinColumn(name = "diary_id"))
     @Column(name = "images_url")
