@@ -40,8 +40,7 @@ public class S3Uploader {
         metadata.setContentType(multipartFile.getContentType());
 
         try (InputStream inputStream = multipartFile.getInputStream()){
-            amazonS3Client.putObject(new PutObjectRequest(bucket, fileName, inputStream, metadata)
-                    .withCannedAcl(CannedAccessControlList.PublicRead));
+            amazonS3Client.putObject(new PutObjectRequest(bucket, fileName, inputStream, metadata));
         } catch(IOException e){
             throw new IOException("S3 업로드 중 오류가 발생하였습니다",e);
         }
