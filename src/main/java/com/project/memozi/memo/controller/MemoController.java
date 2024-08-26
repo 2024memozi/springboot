@@ -32,4 +32,11 @@ public class MemoController {
         return ResponseEntity.ok(memoResponseDto);
     }
 
+    @DeleteMapping("{categoryId}/{memoId}")
+    public ResponseEntity<?> deleteMemo(@PathVariable Long categoryId, @PathVariable Long memoId, @AuthenticationPrincipal CustomUserDetails customUserDetails){
+        Member member = customUserDetails.getMember();
+        memoService.deleteMemo(categoryId,memoId,member);
+        return ResponseEntity.ok("메모가 삭제 되었습니다");
+    }
+
 }
