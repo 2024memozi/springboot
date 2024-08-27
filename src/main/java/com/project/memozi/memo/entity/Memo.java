@@ -27,7 +27,7 @@ public class Memo extends TimeStamped {
     private String title;
 
     @Column(nullable = false)
-    private String content;
+    private String content; 
 
     @Column(nullable = false)
     private String dayOfWeek;
