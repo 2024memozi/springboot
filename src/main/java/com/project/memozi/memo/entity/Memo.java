@@ -1,6 +1,7 @@
 package com.project.memozi.memo.entity;
 
 import com.project.memozi.category.entity.Category;
+import com.project.memozi.checkbox.entity.CheckBox;
 import com.project.memozi.kakao.entity.Member;
 import com.project.memozi.memo.dto.MemoRequestDto;
 import com.project.memozi.util.TimeStamped;
@@ -11,6 +12,8 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 import java.time.format.TextStyle;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 
 @Entity
@@ -31,6 +34,9 @@ public class Memo extends TimeStamped {
 
     @Column(nullable = false)
     private String dayOfWeek;
+
+    @OneToMany(mappedBy = "memo", cascade = CascadeType.ALL)
+    private List<CheckBox> checkBoxes = new ArrayList<>();
 
     @ManyToOne(fetch=FetchType.LAZY)
     @JoinColumn(name = "member_id")

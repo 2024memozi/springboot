@@ -13,11 +13,5 @@ import java.util.List;
 public class MemoRequestDto {
     private String title;
     private String content;
-    private List<CheckBoxRequestDto> checkBoxs;
-
-    public MemoRequestDto(String title, String content, List<CheckBoxRequestDto> checkBoxs) {
-        this.title = title;
-        this.content = content;
-        this.checkBoxs = checkBoxs;
-    }
+    private List<CheckBoxRequestDto> checkBoxes;
 }
