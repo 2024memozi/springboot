@@ -1,16 +1,13 @@
-package com.project.memozi.diary.dto;
+package com.project.memozi.checkbox.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.util.List;
-
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-public class DiaryRequestDto {
-    private String title;
+public class CheckBoxRequestDto {
+    private Long id;
     private String content;
-    private String location;
 }

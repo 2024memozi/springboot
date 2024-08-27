@@ -5,7 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,7 +17,7 @@ public class DiaryResponseDto {
     private String content;
     private List<String> images = new ArrayList<>();
     private String dayOfWeek;
-    private LocalDateTime createdAt;
+    private LocalDate createdAt;
 
     public DiaryResponseDto(Diary diary){
         this.title = diary.getTitle();

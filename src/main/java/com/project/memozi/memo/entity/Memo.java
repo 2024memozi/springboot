@@ -1,6 +1,7 @@
 package com.project.memozi.memo.entity;
 
 import com.project.memozi.category.entity.Category;
+import com.project.memozi.checkbox.entity.CheckBox;
 import com.project.memozi.kakao.entity.Member;
 import com.project.memozi.memo.dto.MemoRequestDto;
 import com.project.memozi.util.TimeStamped;
@@ -9,8 +10,10 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.time.format.TextStyle;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 
 @Entity
@@ -27,10 +30,13 @@ public class Memo extends TimeStamped {
     private String title;
 
     @Column(nullable = false)
-    private String content;
+    private String content; 
 
     @Column(nullable = false)
     private String dayOfWeek;
+
+    @OneToMany(mappedBy = "memo", cascade = CascadeType.ALL)
+    private List<CheckBox> checkBoxes = new ArrayList<>();
 
     @ManyToOne(fetch=FetchType.LAZY)
     @JoinColumn(name = "member_id")
@@ -43,7 +49,7 @@ public class Memo extends TimeStamped {
     @PrePersist
     @PreUpdate
     private void setDay(){
-        LocalDateTime dateTime = getUpdatedAt() != null ? getUpdatedAt() : getCreatedAt();
+        LocalDate dateTime = getUpdatedAt() != null ? getUpdatedAt() : getCreatedAt();
         this.dayOfWeek = dateTime.getDayOfWeek()
                 .getDisplayName(TextStyle.FULL, Locale.KOREAN);
     }
@@ -55,9 +61,30 @@ public class Memo extends TimeStamped {
         this.member = member;
     }
 
-    public void update(MemoRequestDto memoRequestDto){
-        this.title = memoRequestDto.getTitle();
-        this.content = memoRequestDto.getContent();
+//    public void update(MemoRequestDto memoRequestDto){
+//        if (memoRequestDto.getTitle() != null) {
+//            this.title = memoRequestDto.getTitle();
+//        }
+//        if (memoRequestDto.getContent() != null) {
+//            this.content = memoRequestDto.getContent();
+//        }
+//    }
+
+    public void updateTitle(String title) {
+        if (title != null) {
+            this.title = title;
+        }
+    }
+
+    public void updateContent(String content) {
+        if (content != null) {
+            this.content = content;
+        }
+    }
+
+    public void addCheckBox(CheckBox checkBox) {
+        this.checkBoxes.add(checkBox);
+        checkBox.setMemo(this);
     }
 
 }

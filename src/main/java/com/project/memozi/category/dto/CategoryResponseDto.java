@@ -14,16 +14,16 @@ import java.util.List;
 @NoArgsConstructor
 public class CategoryResponseDto {
     private String name;
-    private String representImageUrl;
+    private String representImage;
     private String bgColor;
     private String txtColor;
     private List<MemoResponseDto>memo = new ArrayList<>();
 
     public CategoryResponseDto(Category category) {
         this.name = category.getName();
-        this.representImageUrl = category.getRepresentImage();
-        this.bgColor = category.getBgcolor() != null ? category.getBgcolor().getCode() : null;
-        this.txtColor = category.getTxtcolor() != null ? category.getTxtcolor().getCode() : null;
+        this.representImage = category.getRepresentImage();
+        this.bgColor = category.getBgColor() != null ? category.getBgColor().getCode() : null;
+        this.txtColor = category.getTxtColor() != null ? category.getTxtColor().getCode() : null;
     }
 
     public void setMemo(List<MemoResponseDto> memo){

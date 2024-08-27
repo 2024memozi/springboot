@@ -23,8 +23,9 @@ public class DiaryController {
     public ResponseEntity<DiaryResponseDto> addDiary (@RequestPart(value = "images", required = false) List<MultipartFile> images,
                                                       @RequestParam String title,
                                                       @RequestParam String content,
+                                                      @RequestParam(required = false) String location,
                                                       @AuthenticationPrincipal CustomUserDetails customUserDetails) throws IOException {
-        DiaryRequestDto diaryRequestDto = new DiaryRequestDto(title,content);
+        DiaryRequestDto diaryRequestDto = new DiaryRequestDto(title,content,location);
         DiaryResponseDto diaryResponseDto = diaryService.addDiary(images,diaryRequestDto,customUserDetails.getMember());
         return ResponseEntity.ok().body(diaryResponseDto);
     }
@@ -33,6 +34,29 @@ public class DiaryController {
     public ResponseEntity<List<DiaryResponseDto>> getAllDiary(@AuthenticationPrincipal CustomUserDetails customUserDetails){
         List<DiaryResponseDto> diaryResponseDto = diaryService.getDiary(customUserDetails.getMember());
         return ResponseEntity.ok().body(diaryResponseDto);
+    }
+
+    @GetMapping("/{diaryId}")
+    public ResponseEntity<DiaryResponseDto> getDetailDiary(@PathVariable Long diaryId, @AuthenticationPrincipal CustomUserDetails customUserDetails){
+        DiaryResponseDto diaryResponseDto = diaryService.getDetailDiary(diaryId, customUserDetails.getMember());
+        return ResponseEntity.ok().body(diaryResponseDto);
+    }
+
+    @PutMapping("/{diaryId}")
+    public ResponseEntity<DiaryResponseDto> updateDetailDiary(@RequestPart(value = "images", required = false) List<MultipartFile> images,
+                                                              @RequestParam(required = false) String title,
+                                                              @RequestParam(required = false) String content,
+                                                              @RequestParam(required = false) String location,
+                                                              @PathVariable Long diaryId, @AuthenticationPrincipal CustomUserDetails customUserDetails)throws IOException{
+        DiaryRequestDto diaryRequestDto = new DiaryRequestDto(title,content,location);
+        DiaryResponseDto diaryResponseDto = diaryService.updateDiary(images, diaryId, diaryRequestDto, customUserDetails.getMember());
+        return ResponseEntity.ok().body(diaryResponseDto);
+    }
+
+    @DeleteMapping("/{diaryId}")
+    public ResponseEntity<?> deleteDiary(@PathVariable Long diaryId, @AuthenticationPrincipal CustomUserDetails customeUserDetails){
+        diaryService.deleteDiary(diaryId,customeUserDetails.getMember());
+        return ResponseEntity.ok().body("다이어리가 삭제되었습니다");
     }
 
 }

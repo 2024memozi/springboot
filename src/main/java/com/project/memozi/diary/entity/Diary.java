@@ -30,6 +30,8 @@ public class Diary extends TimeStamped {
     @Column(nullable = false)
     private String content;
 
+    private String location;
+
     @ElementCollection
     @CollectionTable(name = "diary_images", joinColumns = @JoinColumn(name = "diary_id"))
     @Column(name = "images_url")
@@ -59,9 +61,13 @@ public class Diary extends TimeStamped {
         this.images.addAll(imagesUrls);
     }
 
-    public void update(DiaryRequestDto diaryRequestDto, Member member){
-        this.title = diaryRequestDto.getTitle();
-        this.content = diaryRequestDto.getContent();
-        this.member = member;
+    public void update(DiaryRequestDto diaryRequestDto){
+        this.title = diaryRequestDto.getTitle() != null ? diaryRequestDto.getTitle() : this.title;
+        this.content = diaryRequestDto.getContent() != null ? diaryRequestDto.getContent() : this.content;
+        this.location = diaryRequestDto.getLocation() != null ? diaryRequestDto.getLocation() : this.location;
+    }
+
+    public void clearImages() {
+        this.images.clear();
     }
 }
