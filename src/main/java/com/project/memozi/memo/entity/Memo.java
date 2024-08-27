@@ -66,4 +66,9 @@ public class Memo extends TimeStamped {
         this.content = memoRequestDto.getContent();
     }
 
+    public void addCheckBox(CheckBox checkBox) {
+        this.checkBoxes.add(checkBox);
+        checkBox.setMemo(this);
+    }
+
 }

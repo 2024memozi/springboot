@@ -35,4 +35,8 @@ public class CheckBox {
     public void doCheck() {
         this.isChecked = !this.isChecked;
     }
+
+    public void setMemo(Memo memo) {
+        this.memo = memo;
+    }
 }
