@@ -9,6 +9,7 @@ import com.project.memozi.memo.entity.Memo;
 import com.project.memozi.memo.repository.MemoRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -16,6 +17,7 @@ public class CheckBoxService {
     private final MemoRepository memoRepository;
     private final CheckBoxRepository checkBoxRepository;
 
+    @Transactional
     public CheckBoxResponseDto changeCheck(Long checkBoxId, Member member) {
         CheckBox checkBox =checkBoxRepository.findByIdAndMemoMember(checkBoxId,member)
                 .orElseThrow(() -> new IllegalArgumentException("해당 체크리스트 항목이 존재하지 않습니다."));

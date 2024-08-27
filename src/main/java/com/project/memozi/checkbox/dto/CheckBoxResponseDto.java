@@ -7,10 +7,12 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 public class CheckBoxResponseDto {
+    private Long id;
     private String content;
     private boolean isChecked;
 
     public CheckBoxResponseDto(CheckBox checkBox){
+        this.id = checkBox.getId();
         this.content = checkBox.getContent();
         this.isChecked = checkBox.isChecked();
     }

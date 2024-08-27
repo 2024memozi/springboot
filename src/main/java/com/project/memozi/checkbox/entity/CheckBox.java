@@ -36,6 +36,10 @@ public class CheckBox {
         this.isChecked = !this.isChecked;
     }
 
+    public void updateCheckBox(String content){
+        this.content = content;
+    }
+
     public void setMemo(Memo memo) {
         this.memo = memo;
     }

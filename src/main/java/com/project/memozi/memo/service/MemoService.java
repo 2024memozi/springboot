@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -58,7 +59,31 @@ public class MemoService {
             throw new IllegalArgumentException("권한이 없습니다.");
         }
 
-        memo.update(memoRequestDto);
+        if (memoRequestDto.getTitle() != null) {
+            memo.updateTitle(memoRequestDto.getTitle());
+        }
+        if (memoRequestDto.getContent() != null) {
+            memo.updateContent(memoRequestDto.getContent());
+        }
+
+        if (memoRequestDto.getCheckBoxes() != null) {
+            List<CheckBox> existingCheckBoxes = memo.getCheckBoxes();
+            Map<Long, CheckBox> existingCheckBoxMap = existingCheckBoxes.stream()
+                    .collect(Collectors.toMap(CheckBox::getId, cb -> cb));
+
+            for (CheckBoxRequestDto checkBoxRequestDto : memoRequestDto.getCheckBoxes()) {
+                if (checkBoxRequestDto.getId() != null && checkBoxRequestDto.getId() > 0
+                        && existingCheckBoxMap.containsKey(checkBoxRequestDto.getId())) {
+                    CheckBox existingCheckBox = existingCheckBoxMap.get(checkBoxRequestDto.getId());
+                    existingCheckBox.updateCheckBox(checkBoxRequestDto.getContent());
+                } else {
+                    CheckBox newCheckBox = new CheckBox(checkBoxRequestDto.getContent(), memo);
+                    checkBoxRepository.save(newCheckBox);
+                    memo.addCheckBox(newCheckBox);
+                }
+            }
+        }
+
         memoRepository.save(memo);
         return new MemoResponseDto(memo);
     }

@@ -61,9 +61,25 @@ public class Memo extends TimeStamped {
         this.member = member;
     }
 
-    public void update(MemoRequestDto memoRequestDto){
-        this.title = memoRequestDto.getTitle();
-        this.content = memoRequestDto.getContent();
+//    public void update(MemoRequestDto memoRequestDto){
+//        if (memoRequestDto.getTitle() != null) {
+//            this.title = memoRequestDto.getTitle();
+//        }
+//        if (memoRequestDto.getContent() != null) {
+//            this.content = memoRequestDto.getContent();
+//        }
+//    }
+
+    public void updateTitle(String title) {
+        if (title != null) {
+            this.title = title;
+        }
+    }
+
+    public void updateContent(String content) {
+        if (content != null) {
+            this.content = content;
+        }
     }
 
     public void addCheckBox(CheckBox checkBox) {
