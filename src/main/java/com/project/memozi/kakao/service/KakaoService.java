@@ -16,6 +16,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.Optional;
 
 @Service
@@ -30,6 +32,21 @@ public class KakaoService {
 
     @Value("${spring.security.oauth2.client.registration.kakao.redirect-uri}")
     private String redirectUri;
+
+    @Value("${spring.security.oauth2.client.registration.kakao.scope}")
+    private String scope;
+
+    @Value("${spring.security.oauth2.client.provider.kakao.authorization-uri}")
+    private String authorizationUri;
+
+    public String getKakaoAuthUrl() {
+        // 필요한 파라미터를 URL로 인코딩하여 카카오 인증 URL 생성
+        String encodedRedirectUri = URLEncoder.encode(redirectUri, StandardCharsets.UTF_8);
+        return authorizationUri + "?client_id=" + clientId
+                + "&redirect_uri=" + encodedRedirectUri
+                + "&response_type=code"
+                + "&scope=" + scope;
+    }
 
     public String getAccessTokenFromKakao(String code) {
         String url = "https://kauth.kakao.com/oauth/token";
