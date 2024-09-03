@@ -3,6 +3,7 @@ package com.project.memozi.category.controller;
 import com.project.memozi.category.dto.CategoryDetailResponseDto;
 import com.project.memozi.category.dto.CategoryRequestDto;
 import com.project.memozi.category.dto.CategoryResponseDto;
+import com.project.memozi.category.dto.CategorySearchResponseDto;
 import com.project.memozi.category.service.CategoryService;
 import com.project.memozi.kakao.entity.Member;
 import com.project.memozi.kakao.service.CustomUserDetails;
@@ -61,5 +62,13 @@ public class CategoryController {
         Member member = customUserDetails.getMember();
         categoryService.deleteCategory(categoryId,member);
         return ResponseEntity.ok("카테고리가 삭제되었습니다");
+    }
+
+    // 검색
+    @GetMapping("/search")
+    public ResponseEntity<List<CategorySearchResponseDto>> search (@RequestParam String query, @AuthenticationPrincipal CustomUserDetails customUserDetails){
+        Member member = customUserDetails.getMember();
+        List<CategorySearchResponseDto> results = categoryService.search(query,member);
+        return ResponseEntity.ok(results);
     }
 }

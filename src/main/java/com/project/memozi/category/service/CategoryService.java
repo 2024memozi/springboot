@@ -3,6 +3,7 @@ package com.project.memozi.category.service;
 import com.project.memozi.category.dto.CategoryDetailResponseDto;
 import com.project.memozi.category.dto.CategoryRequestDto;
 import com.project.memozi.category.dto.CategoryResponseDto;
+import com.project.memozi.category.dto.CategorySearchResponseDto;
 import com.project.memozi.category.entity.Category;
 import com.project.memozi.category.repository.CategoryRepository;
 import com.project.memozi.color.entity.Color;
@@ -108,5 +109,16 @@ public class CategoryService {
         }
 
         categoryRepository.delete(category);
+    }
+
+    // 검색
+    @Transactional(readOnly = true)
+    public List<CategorySearchResponseDto> search (String query, Member member){
+        List<Category> categories = categoryRepository.searchByCategoryNameOrMemoContent(query, member);
+        return categories.stream().map(category->{
+            CategorySearchResponseDto categorySearchResponseDto = new CategorySearchResponseDto(category);
+            categorySearchResponseDto.setMemoCount(category.getMemos().size());
+            return categorySearchResponseDto;
+        }).collect(Collectors.toList());
     }
 }
