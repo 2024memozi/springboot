@@ -50,4 +50,19 @@ public class Category {
         this.txtColor = txtColor;
         this.member = member;
     }
+
+    public void updateName (String name){
+        this.name = name;
+    }
+    public void updateBgColor (Color bgColor){
+        this.bgColor = bgColor;
+    }
+
+    public void updateTxtColor(Color txtColor){
+        this.txtColor = txtColor;
+    }
+
+    public void updateRepresentImage(String representImage){
+        this.representImage = representImage;
+    }
 }

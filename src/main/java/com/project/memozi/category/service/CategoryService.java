@@ -10,13 +10,16 @@ import com.project.memozi.color.entity.Color;
 import com.project.memozi.color.entity.Type;
 import com.project.memozi.color.repository.ColorRepository;
 import com.project.memozi.kakao.entity.Member;
+import com.project.memozi.memo.dto.MemoResponseDto;
 import com.project.memozi.s3.S3Uploader;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -30,8 +33,18 @@ public class CategoryService {
     @Transactional
     public CategoryResponseDto addCategory(MultipartFile image, CategoryRequestDto categoryRequestDto, Member member)throws IOException {
 
+        boolean isBgColorSelected = categoryRequestDto.getBgColor() != null;
+        boolean isDefaultImageSelected = categoryRequestDto.getDefaultImageUrl() != null;
+        boolean isImageUploaded = image != null && !image.isEmpty();
+
+        if ((isBgColorSelected && isDefaultImageSelected) ||
+                (isBgColorSelected && isImageUploaded) ||
+                (isDefaultImageSelected && isImageUploaded)) {
+            throw new IllegalArgumentException("배경색, 기본 이미지, 갤러리는 동시에 선택할 수 없습니다.");
+        }
+
         Color bgColor = null;
-        if(categoryRequestDto.getBgColor() != null) {
+        if(isBgColorSelected) {
             bgColor = colorRepository.findByIdAndType(categoryRequestDto.getBgColor(), Type.BACKGROUND)
                     .orElseThrow(()->new IllegalArgumentException("해당 배경색이 존재하지 않습니다."));
         }
@@ -41,13 +54,14 @@ public class CategoryService {
 
         String representImageUrl;
 
-        if (image != null && !image.isEmpty()) {
+        if (isDefaultImageSelected) {
             representImageUrl = s3Uploader.upload(image, "category");
-        }  else if (categoryRequestDto.getDefaultImageUrl() != null) {
+        }  else if (isImageUploaded) {
             representImageUrl = categoryRequestDto.getDefaultImageUrl();
         } else {
             throw new IllegalArgumentException("이미지를 선택해주세요.");
         }
+
         Category category = new Category(categoryRequestDto.getName(),representImageUrl, bgColor, txtColor, member);
 
         if (!category.getMember().getId().equals(member.getId())) {
@@ -59,24 +73,33 @@ public class CategoryService {
     }
 
     @Transactional(readOnly = true)
-    public List<CategoryResponseDto> getAllCategories(Member member) {
+    public List<CategoryResponseDto> getAllCategories(Member member, Pageable pageable) {
+        List<Category> categories = categoryRepository.findAllByMember(member);
+        List<CategoryResponseDto> categoryResponseDtos = new ArrayList<>();
 
-        List<Category>categories = categoryRepository.findAllByMember(member);
-        List<CategoryResponseDto>categoryResponseDtos = categories.stream()
-                .map(CategoryResponseDto::new)
-                .collect(Collectors.toList());
+        for (int i = 0; i < categories.size(); i++) {
+            Category category = categories.get(i);
+            CategoryResponseDto categoryResponseDto = new CategoryResponseDto(category);
 
-        if(!categories.isEmpty()){
-            Category defaultCategory = categories.get(0);
-            CategoryDetailResponseDto defaultCategoryMemo = new CategoryDetailResponseDto(defaultCategory);
-            categoryResponseDtos.get(0).setMemo(defaultCategoryMemo.getMemos());
+            if(i == 0){
+                List<MemoResponseDto> pagedMemos = category.getMemos().stream()
+                        .skip((long) pageable.getPageNumber()*pageable.getPageSize())
+                        .limit(pageable.getPageSize())
+                        .map(MemoResponseDto::new)
+                        .collect(Collectors.toList());
+
+                boolean hasNext = category.getMemos().size() > (pageable.getPageNumber() + 1) * pageable.getPageSize();
+
+                CategoryDetailResponseDto firstCategoryMemo = new CategoryDetailResponseDto(category, pagedMemos, hasNext);
+                categoryResponseDto.setMemo(firstCategoryMemo.getMemos());
+            }
+            categoryResponseDtos.add(categoryResponseDto);
         }
-
         return categoryResponseDtos;
     }
 
     @Transactional(readOnly=true)
-    public CategoryDetailResponseDto getCategoryMemos(Long categoryId,Member member){
+    public CategoryDetailResponseDto getCategoryMemos(Long categoryId,Member member,Pageable pageable){
         Category category = categoryRepository.findById(categoryId)
             .orElseThrow(()->new IllegalArgumentException("해당 카테고리가 존재하지 않습니다"));
 
@@ -84,17 +107,60 @@ public class CategoryService {
             throw new IllegalArgumentException("권한이 없습니다.");
         }
 
-        return new CategoryDetailResponseDto(category);
+        List<MemoResponseDto> memos = category.getMemos().stream()
+                .skip((long) pageable.getPageNumber() * pageable.getPageSize())
+                .limit(pageable.getPageSize())
+                .map(MemoResponseDto::new)
+                .collect(Collectors.toList());
+
+        boolean hasNext = category.getMemos().size() > (pageable.getPageNumber() + 1) * pageable.getPageSize();
+
+        return new CategoryDetailResponseDto(category,memos,hasNext);
     }
 
     @Transactional
-    public CategoryResponseDto updateCategory(Long categoryId, CategoryRequestDto categoryRequestDto, Member member){
+    public CategoryResponseDto updateCategory(MultipartFile image, Long categoryId, CategoryRequestDto categoryRequestDto, Member member)throws IOException{
         Category category = categoryRepository.findById(categoryId)
                 .orElseThrow(()->new IllegalArgumentException("해당 카테고리가 존재하지 않습니다"));
 
         if (!category.getMember().getId().equals(member.getId())) {
             throw new IllegalArgumentException("권한이 없습니다.");
         }
+
+        boolean isBgColorSelected = categoryRequestDto.getBgColor() != null;
+        boolean isDefaultImageSelected = categoryRequestDto.getDefaultImageUrl() != null;
+        boolean isImageUploaded = image != null && !image.isEmpty();
+
+        if ((isBgColorSelected && isDefaultImageSelected) ||
+                (isBgColorSelected && isImageUploaded) ||
+                (isDefaultImageSelected && isImageUploaded)) {
+            throw new IllegalArgumentException("배경색, 기본 이미지, 갤러리는 동시에 선택할 수 없습니다.");
+        }
+
+        if(isBgColorSelected) {
+            Color bgColor = colorRepository.findByIdAndType(categoryRequestDto.getBgColor(), Type.BACKGROUND)
+                    .orElseThrow(()->new IllegalArgumentException("해당 배경색이 존재하지 않습니다."));
+            category.updateBgColor(bgColor);
+        }
+
+        if(categoryRequestDto.getTxtColor() !=null) {
+            Color txtColor = colorRepository.findByIdAndType(categoryRequestDto.getTxtColor(), Type.TEXT)
+                    .orElseThrow(() -> new IllegalArgumentException("해당 텍스트 색상이 존재하지 않습니다."));
+            category.updateTxtColor(txtColor);
+        }
+
+        if (categoryRequestDto.getName() != null && !categoryRequestDto.getName().isEmpty()) {
+            category.updateName(categoryRequestDto.getName());
+        }
+
+        if(isImageUploaded){
+            String representImage = s3Uploader.upload(image, "category");
+            category.updateRepresentImage(representImage);
+        }else if(isDefaultImageSelected) {
+            category.updateRepresentImage(categoryRequestDto.getDefaultImageUrl());
+        }
+
+        categoryRepository.save(category);
 
         return new CategoryResponseDto(category);
     }
@@ -111,7 +177,6 @@ public class CategoryService {
         categoryRepository.delete(category);
     }
 
-    // 검색
     @Transactional(readOnly = true)
     public List<CategorySearchResponseDto> search (String query, Member member){
         List<Category> categories = categoryRepository.searchByCategoryNameOrMemoContent(query, member);
