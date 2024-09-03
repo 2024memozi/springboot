@@ -31,7 +31,7 @@ public class CategoryService {
     private final S3Uploader s3Uploader;
 
     @Transactional
-    public CategoryResponseDto addCategory(MultipartFile image, CategoryRequestDto categoryRequestDto, Member member)throws IOException {
+    public CategoryResponseDto addCategory(MultipartFile image, CategoryRequestDto categoryRequestDto, Member member) throws IOException {
 
         boolean isBgColorSelected = categoryRequestDto.getBgColor() != null;
         boolean isDefaultImageSelected = categoryRequestDto.getDefaultImageUrl() != null;
@@ -54,9 +54,9 @@ public class CategoryService {
 
         String representImageUrl;
 
-        if (isDefaultImageSelected) {
-            representImageUrl = s3Uploader.upload(image, "category");
-        }  else if (isImageUploaded) {
+        if (isImageUploaded) {
+            representImageUrl = s3Uploader.upload(image);
+        }  else if (isDefaultImageSelected) {
             representImageUrl = categoryRequestDto.getDefaultImageUrl();
         } else {
             throw new IllegalArgumentException("이미지를 선택해주세요.");
@@ -119,17 +119,17 @@ public class CategoryService {
     }
 
     @Transactional
-    public CategoryResponseDto updateCategory(MultipartFile image, Long categoryId, CategoryRequestDto categoryRequestDto, Member member)throws IOException{
+    public CategoryResponseDto updateCategory(MultipartFile image, Long categoryId, CategoryRequestDto categoryRequestDto, Member member) throws IOException {
         Category category = categoryRepository.findById(categoryId)
-                .orElseThrow(()->new IllegalArgumentException("해당 카테고리가 존재하지 않습니다"));
+                .orElseThrow(() -> new IllegalArgumentException("해당 카테고리가 존재하지 않습니다"));
 
         if (!category.getMember().getId().equals(member.getId())) {
             throw new IllegalArgumentException("권한이 없습니다.");
         }
 
-        boolean isBgColorSelected = categoryRequestDto.getBgColor() != null;
         boolean isDefaultImageSelected = categoryRequestDto.getDefaultImageUrl() != null;
         boolean isImageUploaded = image != null && !image.isEmpty();
+        boolean isBgColorSelected = categoryRequestDto.getBgColor() != null;
 
         if ((isBgColorSelected && isDefaultImageSelected) ||
                 (isBgColorSelected && isImageUploaded) ||
@@ -137,13 +137,13 @@ public class CategoryService {
             throw new IllegalArgumentException("배경색, 기본 이미지, 갤러리는 동시에 선택할 수 없습니다.");
         }
 
-        if(isBgColorSelected) {
+        if (isBgColorSelected) {
             Color bgColor = colorRepository.findByIdAndType(categoryRequestDto.getBgColor(), Type.BACKGROUND)
-                    .orElseThrow(()->new IllegalArgumentException("해당 배경색이 존재하지 않습니다."));
+                    .orElseThrow(() -> new IllegalArgumentException("해당 배경색이 존재하지 않습니다."));
             category.updateBgColor(bgColor);
         }
 
-        if(categoryRequestDto.getTxtColor() !=null) {
+        if (categoryRequestDto.getTxtColor() != null) {
             Color txtColor = colorRepository.findByIdAndType(categoryRequestDto.getTxtColor(), Type.TEXT)
                     .orElseThrow(() -> new IllegalArgumentException("해당 텍스트 색상이 존재하지 않습니다."));
             category.updateTxtColor(txtColor);
@@ -153,10 +153,20 @@ public class CategoryService {
             category.updateName(categoryRequestDto.getName());
         }
 
-        if(isImageUploaded){
-            String representImage = s3Uploader.upload(image, "category");
-            category.updateRepresentImage(representImage);
-        }else if(isDefaultImageSelected) {
+        String oldImageUrl = category.getRepresentImage();
+
+        if (isImageUploaded) {
+            if (oldImageUrl != null) {
+                String oldFileName = extractFileNameFromUrl(oldImageUrl);
+                s3Uploader.deleteFile(oldFileName);
+            }
+            String newImage = s3Uploader.upload(image);
+            category.updateRepresentImage(newImage);
+        } else if (isDefaultImageSelected) {
+            if (oldImageUrl != null && !oldImageUrl.equals(categoryRequestDto.getDefaultImageUrl())) {
+                String oldFileName = extractFileNameFromUrl(oldImageUrl);
+                s3Uploader.deleteFile(oldFileName);
+            }
             category.updateRepresentImage(categoryRequestDto.getDefaultImageUrl());
         }
 
@@ -165,16 +175,33 @@ public class CategoryService {
         return new CategoryResponseDto(category);
     }
 
+
+    private String extractFileNameFromUrl(String imageUrl) {
+        String fileName = imageUrl.substring(imageUrl.lastIndexOf("/") + 1);
+        return fileName;
+    }
+
     @Transactional
     public void deleteCategory(Long categoryId, Member member){
         Category category = categoryRepository.findById(categoryId)
-                .orElseThrow(()->new IllegalArgumentException("해당 카테고리가 존재하지 않습니다"));
+                .orElseThrow(() -> new IllegalArgumentException("해당 카테고리가 존재하지 않습니다"));
 
         if (!category.getMember().getId().equals(member.getId())) {
             throw new IllegalArgumentException("권한이 없습니다.");
         }
 
+        String imageUrl = category.getRepresentImage();
         categoryRepository.delete(category);
+
+        if (imageUrl != null) {
+            String fileName = extractFileNameFromUrl(imageUrl);
+
+            try {
+                s3Uploader.deleteFile(fileName);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     @Transactional(readOnly = true)

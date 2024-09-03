@@ -20,12 +20,14 @@ public class S3Uploader {
     @Value("${spring.cloud.aws.s3.bucket}")
     private String bucket;
 
-    public String upload(MultipartFile multipartFile, String dirName) throws IOException {
+    private final String baseDir = "uploads/";
+
+    public String upload(MultipartFile multipartFile) throws IOException {
         String originalFileName = multipartFile.getOriginalFilename();
         String uuid = UUID.randomUUID().toString();
-        String uniqueFileName = uuid+"_"+originalFileName.replaceAll("\\s","_");
+        String uniqueFileName = uuid + "_" + originalFileName.replaceAll("\\s", "_");
 
-        String fileName = dirName + "/" +uniqueFileName;
+        String fileName = baseDir+uniqueFileName;
         return putS3(multipartFile,fileName);
 
 
@@ -46,14 +48,15 @@ public class S3Uploader {
 
     public void deleteFile(String fileName) {
         try {
-            amazonS3Client.deleteObject(bucket, fileName);
+            amazonS3Client.deleteObject(bucket,baseDir+fileName);
+            System.out.println("파일을 삭제하였습니다.: " + fileName);
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    public String updateFile(MultipartFile newFile, String oldFileName, String dirName)throws IOException{
+    public String updateFile(MultipartFile newFile, String oldFileName)throws IOException{
         deleteFile(oldFileName);
-        return upload(newFile,dirName);
+        return upload(newFile);
     }
 }
