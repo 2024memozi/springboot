@@ -34,7 +34,7 @@ public class DiaryService {
         List<String> imagesUrls = new ArrayList<>();
         if (images != null && !images.isEmpty()) {
             for (MultipartFile image : images) {
-                String imagesUrl = s3Uploader.upload(image, "image");
+                String imagesUrl = s3Uploader.upload(image);
                 imagesUrls.add(imagesUrl);
             }
         }
@@ -66,7 +66,7 @@ public class DiaryService {
     }
 
     @Transactional
-    public DiaryResponseDto updateDiary(List<MultipartFile> images, Long diaryId, DiaryRequestDto diaryRequestDto, Member member)throws IOException {
+    public DiaryResponseDto updateDiary(List<MultipartFile> images, Long diaryId, DiaryRequestDto diaryRequestDto, Member member) throws IOException {
         Diary diary = diaryRepository.findById(diaryId)
                 .orElseThrow(() -> new IllegalArgumentException("해당 다이어리가 존재하지 않습니다."));
 
@@ -74,25 +74,28 @@ public class DiaryService {
             throw new IllegalArgumentException("권한이 없습니다");
         }
 
+        diary.update(diaryRequestDto);
+        diaryRepository.save(diary);
+
         if (images != null && !images.isEmpty()) {
             updateDiaryImages(diary, images);
         }
 
-        diary.update(diaryRequestDto);
         diaryRepository.save(diary);
+
         return new DiaryResponseDto(diary);
     }
 
-    private void updateDiaryImages(Diary diary, List<MultipartFile> images) throws IOException{
+    private void updateDiaryImages(Diary diary, List<MultipartFile> images) throws IOException {
         List<String> oldImageUrls = diary.getImages();
         for (String oldImageUrl : oldImageUrls) {
-            String fileName = oldImageUrl.substring(oldImageUrl.lastIndexOf("com") + 4);
+            String fileName = extractFileNameFromUrl(oldImageUrl);
             s3Uploader.deleteFile(fileName);
         }
 
         List<String> newImageUrls = new ArrayList<>();
         for (MultipartFile image : images) {
-            String newImageUrl = s3Uploader.upload(image, "image");
+            String newImageUrl = s3Uploader.upload(image);
             newImageUrls.add(newImageUrl);
         }
 
@@ -100,10 +103,11 @@ public class DiaryService {
         diary.addImages(newImageUrls);
     }
 
+
     @Transactional
     public void deleteDiary(Long diaryId, Member member) {
         Diary diary = diaryRepository.findById(diaryId).orElseThrow(
-                ()->new IllegalArgumentException("해당 다이어리가 존재하지 않습니다.")
+                () -> new IllegalArgumentException("해당 다이어리가 존재하지 않습니다.")
         );
 
         if (!diary.getMember().getId().equals(member.getId())) {
@@ -112,10 +116,20 @@ public class DiaryService {
 
         if (diary.getImages() != null && !diary.getImages().isEmpty()) {
             for (String imageUrl : diary.getImages()) {
-                String fileName = imageUrl.replace(bucketUrl, "");
-                s3Uploader.deleteFile(fileName);
+                String fileName = extractFileNameFromUrl(imageUrl);
+
+                try {
+                    s3Uploader.deleteFile(fileName);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
         }
         diaryRepository.delete(diary);
+    }
+
+    private String extractFileNameFromUrl(String imageUrl) {
+        String fileName = imageUrl.substring(imageUrl.indexOf("uploads/"));
+        return fileName;
     }
 }

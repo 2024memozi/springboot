@@ -17,5 +17,6 @@ public class Color {
 
     private String code;
 
+    @Enumerated(EnumType.STRING)
     private Type type;
 }

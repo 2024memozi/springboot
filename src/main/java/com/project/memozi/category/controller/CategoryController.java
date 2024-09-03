@@ -3,10 +3,12 @@ package com.project.memozi.category.controller;
 import com.project.memozi.category.dto.CategoryDetailResponseDto;
 import com.project.memozi.category.dto.CategoryRequestDto;
 import com.project.memozi.category.dto.CategoryResponseDto;
+import com.project.memozi.category.dto.CategorySearchResponseDto;
 import com.project.memozi.category.service.CategoryService;
 import com.project.memozi.kakao.entity.Member;
 import com.project.memozi.kakao.service.CustomUserDetails;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -36,23 +38,30 @@ public class CategoryController {
     }
 
     @GetMapping
-    public ResponseEntity<List<CategoryResponseDto>> getAllCategory(@AuthenticationPrincipal CustomUserDetails customUserDetails){
+    public ResponseEntity<List<CategoryResponseDto>> getAllCategory(@AuthenticationPrincipal CustomUserDetails customUserDetails, Pageable pageable){
         Member member = customUserDetails.getMember();
-        List<CategoryResponseDto> categoryList = categoryService.getAllCategories(member);
+        List<CategoryResponseDto> categoryList = categoryService.getAllCategories(member,pageable);
         return ResponseEntity.ok(categoryList);
     }
 
     @GetMapping("/{categoryId}")
-    public ResponseEntity<CategoryDetailResponseDto>getCategoryMemo(@PathVariable Long categoryId,@AuthenticationPrincipal CustomUserDetails customUserDetails){
+    public ResponseEntity<CategoryDetailResponseDto>getCategoryMemo(@PathVariable Long categoryId,@AuthenticationPrincipal CustomUserDetails customUserDetails, Pageable pageable){
         Member member = customUserDetails.getMember();
-        CategoryDetailResponseDto categoryDetailResponseDto = categoryService.getCategoryMemos(categoryId,member);
+        CategoryDetailResponseDto categoryDetailResponseDto = categoryService.getCategoryMemos(categoryId,member,pageable);
         return ResponseEntity.ok(categoryDetailResponseDto);
     }
 
     @PutMapping("/{categoryId}")
-    public ResponseEntity<CategoryResponseDto>updateCategory(@PathVariable Long categoryId, @RequestBody CategoryRequestDto categoryRequestDto, @AuthenticationPrincipal CustomUserDetails customUserDetails){
+    public ResponseEntity<CategoryResponseDto>updateCategory(@RequestPart(value = "images", required = false) MultipartFile image,
+                                                             @PathVariable Long categoryId,
+                                                             @RequestParam String name,
+                                                             @RequestParam(required = false) String defaultImageUrl,
+                                                             @RequestParam(required = false) Long bgColorId,
+                                                             @RequestParam(required = false) Long txtColorId,
+                                                             @AuthenticationPrincipal CustomUserDetails customUserDetails)throws IOException{
         Member member = customUserDetails.getMember();
-        CategoryResponseDto categoryResponseDto = categoryService.updateCategory(categoryId, categoryRequestDto, member);
+        CategoryRequestDto categoryRequestDto = new CategoryRequestDto(name, defaultImageUrl, bgColorId, txtColorId);
+        CategoryResponseDto categoryResponseDto = categoryService.updateCategory(image, categoryId, categoryRequestDto, member);
         return ResponseEntity.ok(categoryResponseDto);
     }
 
@@ -61,5 +70,12 @@ public class CategoryController {
         Member member = customUserDetails.getMember();
         categoryService.deleteCategory(categoryId,member);
         return ResponseEntity.ok("카테고리가 삭제되었습니다");
+    }
+
+    @GetMapping("/search")
+    public ResponseEntity<List<CategorySearchResponseDto>> search (@RequestParam String query, @AuthenticationPrincipal CustomUserDetails customUserDetails){
+        Member member = customUserDetails.getMember();
+        List<CategorySearchResponseDto> results = categoryService.search(query,member);
+        return ResponseEntity.ok(results);
     }
 }

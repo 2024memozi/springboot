@@ -18,6 +18,7 @@ public class CategoryDetailResponseDto {
     private String bgColor;
     private String txtColor;
     private List<MemoResponseDto> memos;
+    private boolean hasNext;
 
     public CategoryDetailResponseDto(Category category) {
         this.name = category.getName();
@@ -27,5 +28,14 @@ public class CategoryDetailResponseDto {
         this.memos = category.getMemos().stream()
                 .map(MemoResponseDto::new)
                 .collect(Collectors.toList());
+    }
+
+    public CategoryDetailResponseDto(Category category, List<MemoResponseDto> memos, boolean hasNext) {
+        this.name = category.getName();
+        this.representImage = category.getRepresentImage();
+        this.bgColor = category.getBgColor() != null ? category.getBgColor().getCode() : null;
+        this.txtColor = category.getTxtColor() != null ? category.getTxtColor().getCode() : null;
+        this.memos = memos;
+        this.hasNext = hasNext;
     }
 }
