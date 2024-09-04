@@ -14,29 +14,42 @@ import java.util.function.Function;
 
 @Component
 public class JwtUtil {
+
     @Value("${spring.jwt.secret}")
     private String secretKey;
 
-    @Value("${spring.jwt.expiration}")
-    private Long jwtExpirationMs;
+    @Value("${spring.jwt.accessTokenExpiration}")
+    private Long accessTokenExpirationMs;
 
-    public String generateToken(String name) {
+    @Value("${spring.jwt.refreshTokenExpiration}")
+    private Long refreshTokenExpirationMs;
+
+    private SecretKey getSigningKey() {
         byte[] keyBytes = secretKey.getBytes(StandardCharsets.UTF_8);
-        SecretKey key = Keys.hmacShaKeyFor(keyBytes);
-        String token = Jwts.builder()
+        return Keys.hmacShaKeyFor(keyBytes);
+    }
+
+    public String generateAccessToken(String name) {
+        return generateToken(name, accessTokenExpirationMs);
+    }
+
+    public String generateRefreshToken(String name) {
+        return generateToken(name, refreshTokenExpirationMs);
+    }
+
+    private String generateToken(String name, Long expirationMs) {
+        SecretKey key = getSigningKey();
+        return Jwts.builder()
                 .setSubject(name)
                 .setIssuedAt(new Date())
-                .setExpiration(new Date((new Date()).getTime() + jwtExpirationMs))
+                .setExpiration(new Date((new Date()).getTime() + expirationMs))
                 .signWith(key, SignatureAlgorithm.HS512)
                 .compact();
-
-        return token;
     }
 
     public String extractName(String token) {
         return extractClaim(token, Claims::getSubject);
     }
-
 
     public <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
         final Claims claims = extractAllClaims(token);
@@ -44,10 +57,8 @@ public class JwtUtil {
     }
 
     private Claims extractAllClaims(String token) {
-        byte[] keyBytes = secretKey.getBytes(StandardCharsets.UTF_8);
-        SecretKey key = Keys.hmacShaKeyFor(keyBytes);
         return Jwts.parserBuilder()
-                .setSigningKey(key)
+                .setSigningKey(getSigningKey())
                 .build()
                 .parseClaimsJws(token)
                 .getBody();
@@ -58,7 +69,7 @@ public class JwtUtil {
         return (extractedName.equals(name) && !isTokenExpired(token));
     }
 
-    private boolean isTokenExpired(String token) {
+    public boolean isTokenExpired(String token) {
         return extractExpiration(token).before(new Date());
     }
 

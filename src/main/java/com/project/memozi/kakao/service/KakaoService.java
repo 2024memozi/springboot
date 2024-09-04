@@ -18,6 +18,7 @@ import org.springframework.web.client.RestTemplate;
 
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.util.Map;
 import java.util.Optional;
 
 @Service
@@ -94,8 +95,17 @@ public class KakaoService {
         }
     }
 
-    public String generateJwtForUser(Member member) {
-        return jwtUtil.generateToken(member.getNickname());
+    public Map<String, String> generateJwtForUser(Member member) {
+        String accessToken = jwtUtil.generateAccessToken(member.getNickname());
+        String refreshToken = jwtUtil.generateRefreshToken(member.getNickname());
+
+        member.setRefreshToken(refreshToken);
+        memberRepository.save(member);
+
+        return Map.of(
+                "accessToken", accessToken,
+                "refreshToken", refreshToken
+        );
     }
 
     @Transactional

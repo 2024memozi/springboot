@@ -23,23 +23,17 @@ public class KakaoController {
     private final CustomOAuth2UserService customOAuth2UserService;
 
     @PostMapping("/oauth2/kakao/login")
-    public ResponseEntity<String> handleKakaoLogin(@RequestBody Map<String, String> body){
+    public ResponseEntity<Map<String, String>> handleKakaoLogin(@RequestBody Map<String, String> body){
         String code = body.get("code");
         if(code == null){
-            return new ResponseEntity<>("인가코드가 필요합니다.", HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(Map.of("error", "인가코드가 필요합니다."), HttpStatus.BAD_REQUEST);
         }
 
         String accessToken = kakaoService.getAccessTokenFromKakao(code);
         Member member = kakaoService.getUserInfo(accessToken);
-        String jwtToken = kakaoService.generateJwtForUser(member);
+        Map<String, String> tokens = kakaoService.generateJwtForUser(member);
 
-        return new ResponseEntity<>(jwtToken, HttpStatus.OK);
-    }
-
-    @GetMapping("/login/oauth2/kakao")
-    public void redirectKakaoLogin(HttpServletResponse response) throws IOException {
-        String kakaoAuthUrl = kakaoService.getKakaoAuthUrl();
-        response.sendRedirect(kakaoAuthUrl);
+        return new ResponseEntity<>(tokens, HttpStatus.OK);
     }
 
     @DeleteMapping("/deleteMember")

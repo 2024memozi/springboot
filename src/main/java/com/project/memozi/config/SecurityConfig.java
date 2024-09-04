@@ -46,7 +46,7 @@ public class SecurityConfig {
 
     @Bean
     public OAuth2SuccessHandler oAuth2SuccessHandler() {
-        return new OAuth2SuccessHandler(jwtUtil);
+        return new OAuth2SuccessHandler(jwtUtil,memberRepository);
     }
 
     @Bean
@@ -65,5 +65,4 @@ public class SecurityConfig {
         source.registerCorsConfiguration("/**", configuration);
         return source;
     }
-    }
-
+}
