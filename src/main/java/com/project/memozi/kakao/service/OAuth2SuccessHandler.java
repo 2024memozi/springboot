@@ -26,14 +26,6 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
         response.getWriter().write("{\"token\": \"" + jwtToken + "\"}");
-//        String redirectUrl = "http://localhost:3000";
-//        String frontendRedirectUri = request.getParameter("redirect_uri");
-//
-//        if (frontendRedirectUri != null && !frontendRedirectUri.isEmpty()) {
-//            redirectUrl = frontendRedirectUri;
-//        }
-//
-//        response.sendRedirect(redirectUrl + "?token=" + jwtToken);
     }
 }
 
