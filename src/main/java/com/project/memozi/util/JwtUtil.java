@@ -14,6 +14,7 @@ import java.util.function.Function;
 
 @Component
 public class JwtUtil {
+
     @Value("${spring.jwt.secret}")
     private String secretKey;
 
@@ -68,7 +69,7 @@ public class JwtUtil {
         return (extractedName.equals(name) && !isTokenExpired(token));
     }
 
-    private boolean isTokenExpired(String token) {
+    public boolean isTokenExpired(String token) {
         return extractExpiration(token).before(new Date());
     }
 
