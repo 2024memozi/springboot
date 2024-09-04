@@ -155,30 +155,37 @@ public class CategoryService {
 
         String oldImageUrl = category.getRepresentImage();
 
-        if (isImageUploaded) {
-            if (oldImageUrl != null) {
-                String oldFileName = extractFileNameFromUrl(oldImageUrl);
-                s3Uploader.deleteFile(oldFileName);
+        try {
+            if (isImageUploaded) {
+                if (oldImageUrl != null) {
+                    String oldFileName = extractFileNameFromUrl(oldImageUrl);
+                    s3Uploader.deleteFile(oldFileName);
+                }
+                String newImage = s3Uploader.upload(image);
+                category.updateRepresentImage(newImage);
+            } else if (isDefaultImageSelected) {
+                if (oldImageUrl != null && !oldImageUrl.equals(categoryRequestDto.getDefaultImageUrl())) {
+                    String oldFileName = extractFileNameFromUrl(oldImageUrl);
+                    s3Uploader.deleteFile(oldFileName);
+                }
+                category.updateRepresentImage(categoryRequestDto.getDefaultImageUrl());
             }
-            String newImage = s3Uploader.upload(image);
-            category.updateRepresentImage(newImage);
-        } else if (isDefaultImageSelected) {
-            if (oldImageUrl != null && !oldImageUrl.equals(categoryRequestDto.getDefaultImageUrl())) {
-                String oldFileName = extractFileNameFromUrl(oldImageUrl);
-                s3Uploader.deleteFile(oldFileName);
+        }catch(IOException e){
+                throw new RuntimeException("파일 처리 중 오류가 발생하였스빈다." + e.getMessage(),e);
             }
-            category.updateRepresentImage(categoryRequestDto.getDefaultImageUrl());
-        }
 
-        categoryRepository.save(category);
+        Category updateCategory = categoryRepository.save(category);
 
-        return new CategoryResponseDto(category);
+        return new CategoryResponseDto(updateCategory);
     }
 
 
     private String extractFileNameFromUrl(String imageUrl) {
-        String fileName = imageUrl.substring(imageUrl.lastIndexOf("/") + 1);
-        return fileName;
+        try{
+            return "uploads/" + imageUrl.substring(imageUrl.lastIndexOf("/") + 1);
+        }catch(Exception e){
+            throw new IllegalArgumentException("파일 이름을 추출하는 중 오류가 발생하였습니다.");
+        }
     }
 
     @Transactional
@@ -194,10 +201,10 @@ public class CategoryService {
         categoryRepository.delete(category);
 
         if (imageUrl != null) {
-            String fileName = extractFileNameFromUrl(imageUrl);
+            String filePath = extractFileNameFromUrl(imageUrl);
 
             try {
-                s3Uploader.deleteFile(fileName);
+                s3Uploader.deleteFile(filePath);
             } catch (Exception e) {
                 e.printStackTrace();
             }

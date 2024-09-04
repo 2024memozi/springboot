@@ -83,13 +83,20 @@ public class KakaoService {
             JsonNode jsonNode = objectMapper.readTree(responseBody);
             String kakaoId = jsonNode.get("id").asText();
             String nickname = jsonNode.get("properties").get("nickname").asText();
+
+            System.out.println("kakao ID: " + kakaoId);
+            System.out.println("Nickname: " + nickname);
+
             Optional<Member> memberOptional = memberRepository.findByKakaoId(kakaoId);
-            return memberOptional.orElseGet(() -> {
+            if(memberOptional.isPresent()){
+                return memberOptional.get();
+            }else{
                 Member newMember = new Member();
                 newMember.setKakaoId(kakaoId);
                 newMember.setNickname(nickname);
+                System.out.println("저장되는 kakaoId: " + kakaoId);
                 return memberRepository.save(newMember);
-            });
+            }
         } catch (Exception e) {
             throw new RuntimeException("카카오 사용자 정보 가져오는 중 오류 발생", e);
         }

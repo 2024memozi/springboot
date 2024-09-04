@@ -121,6 +121,7 @@ public class DiaryService {
                 try {
                     s3Uploader.deleteFile(fileName);
                 } catch (Exception e) {
+                    System.err.println("파일 삭제에 실패하셨습니다.: " + fileName);
                     e.printStackTrace();
                 }
             }
