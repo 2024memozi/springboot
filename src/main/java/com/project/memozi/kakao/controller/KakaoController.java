@@ -22,17 +22,8 @@ public class KakaoController {
     private final KakaoService kakaoService;
     private final CustomOAuth2UserService customOAuth2UserService;
 
-//    @GetMapping("/login/oauth2/code/kakao")
-//    public ResponseEntity<String> callback (@RequestParam("code") String code) {
-//        String accessToken = kakaoService.getAccessTokenFromKakao(code);
-//        Member member = kakaoService.getUserInfo(accessToken);
-//        String jwtToken = kakaoService.generateJwtForUser(member);
-//        return new ResponseEntity<>(jwtToken, HttpStatus.OK);
-//    }
-
-    @PostMapping("/login/oauth2/code/kakao")
-    public ResponseEntity<String> callback(@RequestBody Map<String, String> body) {
-        String code = body.get("code");
+    @GetMapping("/login/oauth2/code/kakao")
+    public ResponseEntity<String> callback (@RequestParam("code") String code) {
         String accessToken = kakaoService.getAccessTokenFromKakao(code);
         Member member = kakaoService.getUserInfo(accessToken);
         String jwtToken = kakaoService.generateJwtForUser(member);
