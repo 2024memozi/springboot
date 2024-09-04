@@ -23,11 +23,11 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         OAuth2AuthenticationToken authToken = (OAuth2AuthenticationToken) authentication;
         CustomUserDetails userDetails = (CustomUserDetails) authToken.getPrincipal();
         String jwtToken = jwtUtil.generateToken(userDetails.getMember().getNickname());
-//        response.setContentType("application/json");
-//        response.setCharacterEncoding("UTF-8");
-//        response.getWriter().write("{\"token\": \"" + jwtToken + "\"}");
-        String redirectUrl = "https://localhost:3000/mainpage?token=" + jwtToken;
-        response.sendRedirect(redirectUrl);
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
+        response.getWriter().write("{\"token\": \"" + jwtToken + "\"}");
+//        String redirectUrl = "myapp://oauth/kakao?token=" + jwtToken;
+//        response.sendRedirect(redirectUrl);
     }
 }
 

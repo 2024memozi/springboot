@@ -25,6 +25,8 @@ public class Member {
 
     private String nickname;
 
+    private String refreshToken;
+
     @OneToMany(mappedBy = "member", cascade = CascadeType.REMOVE)
     private List<Category> categories;
 
