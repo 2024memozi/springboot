@@ -23,13 +23,12 @@ public class KakaoController {
     private final CustomOAuth2UserService customOAuth2UserService;
 
     @PostMapping("/oauth2/kakao/login")
-    public ResponseEntity<Map<String, String>> handleKakaoLogin(@RequestBody Map<String, String> body){
-        String code = body.get("code");
-        if(code == null){
-            return new ResponseEntity<>(Map.of("error", "인가코드가 필요합니다."), HttpStatus.BAD_REQUEST);
+    public ResponseEntity<Map<String, String>> handleKakaoLogin (@RequestBody Map<String, String> body){
+        String accessToken = body.get("accessToken");
+        if(accessToken == null){
+            return new ResponseEntity<>(Map.of("error", "AccessToken이 필요합니다."), HttpStatus.BAD_REQUEST);
         }
 
-        String accessToken = kakaoService.getAccessTokenFromKakao(code);
         Member member = kakaoService.getUserInfo(accessToken);
         Map<String, String> tokens = kakaoService.generateJwtForUser(member);
 
