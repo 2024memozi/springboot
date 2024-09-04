@@ -48,27 +48,27 @@ public class KakaoService {
                 + "&scope=" + scope;
     }
 
-    public String getAccessTokenFromKakao(String code) {
-        String url = "https://kauth.kakao.com/oauth/token";
-        RestTemplate restTemplate = new RestTemplate();
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
-        String body = "grant_type=authorization_code" +
-                "&client_id=" + clientId +
-                "&redirect_uri=" + redirectUri +
-                "&code=" + code;
-        HttpEntity<String> request = new HttpEntity<>(body, headers);
-        ResponseEntity<String> response = restTemplate.postForEntity(url, request, String.class);
-        try {
-            String responseBody = response.getBody();
-            ObjectMapper objectMapper = new ObjectMapper();
-            JsonNode jsonNode = objectMapper.readTree(responseBody);
-            return jsonNode.get("access_token").asText();
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw new RuntimeException("카카오에서 엑세스 토큰을 받아오는 중 오류 발생", e);
-        }
-    }
+//    public String getAccessTokenFromKakao(String code) {
+//        String url = "https://kauth.kakao.com/oauth/token";
+//        RestTemplate restTemplate = new RestTemplate();
+//        HttpHeaders headers = new HttpHeaders();
+//        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+//        String body = "grant_type=authorization_code" +
+//                "&client_id=" + clientId +
+//                "&redirect_uri=" + redirectUri +
+//                "&code=" + code;
+//        HttpEntity<String> request = new HttpEntity<>(body, headers);
+//        ResponseEntity<String> response = restTemplate.postForEntity(url, request, String.class);
+//        try {
+//            String responseBody = response.getBody();
+//            ObjectMapper objectMapper = new ObjectMapper();
+//            JsonNode jsonNode = objectMapper.readTree(responseBody);
+//            return jsonNode.get("access_token").asText();
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//            throw new RuntimeException("카카오에서 엑세스 토큰을 받아오는 중 오류 발생", e);
+//        }
+//    }
 
     public Member getUserInfo(String accessToken) {
         String url = "https://kapi.kakao.com/v2/user/me";
