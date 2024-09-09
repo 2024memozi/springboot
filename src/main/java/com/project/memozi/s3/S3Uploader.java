@@ -1,6 +1,9 @@
 package com.project.memozi.s3;
 
+import com.amazonaws.AmazonServiceException;
+import com.amazonaws.SdkClientException;
 import com.amazonaws.services.s3.AmazonS3Client;
+import com.amazonaws.services.s3.model.DeleteObjectRequest;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import lombok.RequiredArgsConstructor;
@@ -29,8 +32,6 @@ public class S3Uploader {
 
         String fileName = baseDir+uniqueFileName;
         return putS3(multipartFile,fileName);
-
-
     }
 
     private String putS3(MultipartFile multipartFile, String fileName)throws IOException {
@@ -46,12 +47,17 @@ public class S3Uploader {
         return amazonS3Client.getUrl(bucket,fileName).toString();
     }
 
-    public void deleteFile(String fileName) {
+    public void deleteFile(String filePath) throws IOException{
         try {
-            amazonS3Client.deleteObject(bucket,baseDir+fileName);
-            System.out.println("파일을 삭제하였습니다.: " + fileName);
-        } catch (Exception e) {
-            e.printStackTrace();
+            System.out.println("삭제할 파일 경로: " + filePath);
+            amazonS3Client.deleteObject(new DeleteObjectRequest(bucket, filePath));
+            System.out.println("파일을 삭제하였습니다: " + filePath);
+        } catch (AmazonServiceException e) {
+            System.err.println("AmazonServiceException: " + e.getMessage());
+            throw e;
+        } catch (SdkClientException e) {
+            System.err.println("SdkClientException: " + e.getMessage());
+            throw e;
         }
     }
 

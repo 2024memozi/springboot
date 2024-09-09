@@ -28,11 +28,11 @@ public class CategoryController {
     public ResponseEntity<?> addCategory(@RequestPart(value = "images", required = false) MultipartFile image,
                                          @RequestParam String name,
                                          @RequestParam(required = false) String defaultImageUrl,
-                                         @RequestParam(required = false) Long bgColorId,
+                                         @RequestParam(required = false) String bgColorImageUrl,
                                          @RequestParam Long txtColorId,
                                          @AuthenticationPrincipal CustomUserDetails customUserDetails)throws IOException {
         Member member = customUserDetails.getMember();
-        CategoryRequestDto categoryRequestDto = new CategoryRequestDto(name,defaultImageUrl,bgColorId,txtColorId);
+        CategoryRequestDto categoryRequestDto = new CategoryRequestDto(name,defaultImageUrl,bgColorImageUrl,txtColorId);
         CategoryResponseDto categoryResponseDto = categoryService.addCategory(image, categoryRequestDto, member);
         return ResponseEntity.ok(categoryResponseDto);
     }
@@ -56,11 +56,11 @@ public class CategoryController {
                                                              @PathVariable Long categoryId,
                                                              @RequestParam String name,
                                                              @RequestParam(required = false) String defaultImageUrl,
-                                                             @RequestParam(required = false) Long bgColorId,
+                                                             @RequestParam(required = false) String bgColorImageUrl,
                                                              @RequestParam(required = false) Long txtColorId,
                                                              @AuthenticationPrincipal CustomUserDetails customUserDetails)throws IOException{
         Member member = customUserDetails.getMember();
-        CategoryRequestDto categoryRequestDto = new CategoryRequestDto(name, defaultImageUrl, bgColorId, txtColorId);
+        CategoryRequestDto categoryRequestDto = new CategoryRequestDto(name, defaultImageUrl, bgColorImageUrl, txtColorId);
         CategoryResponseDto categoryResponseDto = categoryService.updateCategory(image, categoryId, categoryRequestDto, member);
         return ResponseEntity.ok(categoryResponseDto);
     }

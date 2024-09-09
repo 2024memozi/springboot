@@ -32,9 +32,9 @@ public class Category {
     @JoinColumn(name = "member_id")
     private Member member;
 
-    @ManyToOne
-    @JoinColumn(name = "bgcolor_id")
-    private Color bgColor;
+//    @ManyToOne
+//    @JoinColumn(name = "bgcolor_id")
+//    private Color bgColor;
 
     @ManyToOne
     @JoinColumn(name = "txtcolor_id")
@@ -43,10 +43,10 @@ public class Category {
     @OneToMany(mappedBy = "category", cascade = CascadeType.REMOVE)
     private List <Memo> memos;
 
-    public Category(String name, String representImage, Color bgColor, Color txtColor, Member member) {
+    public Category(String name, String representImage, Color txtColor, Member member) {
         this.name = name;
         this.representImage = representImage;
-        this.bgColor = bgColor;
+//        this.bgColor = bgColor;
         this.txtColor = txtColor;
         this.member = member;
     }
@@ -54,9 +54,9 @@ public class Category {
     public void updateName (String name){
         this.name = name;
     }
-    public void updateBgColor (Color bgColor){
-        this.bgColor = bgColor;
-    }
+//    public void updateBgColor (Color bgColor){
+//        this.bgColor = bgColor;
+//    }
 
     public void updateTxtColor(Color txtColor){
         this.txtColor = txtColor;
