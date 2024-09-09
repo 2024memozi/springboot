@@ -33,7 +33,7 @@ public class CategoryService {
     @Transactional
     public CategoryResponseDto addCategory(MultipartFile image, CategoryRequestDto categoryRequestDto, Member member) throws IOException {
 
-        boolean isBgColorSelected = categoryRequestDto.getBgColor() != null;
+        boolean isBgColorSelected = categoryRequestDto.getBgColorImageUrl() != null;
         boolean isDefaultImageSelected = categoryRequestDto.getDefaultImageUrl() != null;
         boolean isImageUploaded = image != null && !image.isEmpty();
 
@@ -43,11 +43,11 @@ public class CategoryService {
             throw new IllegalArgumentException("배경색, 기본 이미지, 갤러리는 동시에 선택할 수 없습니다.");
         }
 
-        Color bgColor = null;
-        if(isBgColorSelected) {
-            bgColor = colorRepository.findByIdAndType(categoryRequestDto.getBgColor(), Type.BACKGROUND)
-                    .orElseThrow(()->new IllegalArgumentException("해당 배경색이 존재하지 않습니다."));
-        }
+//        Color bgColor = null;
+//        if(isBgColorSelected) {
+//            bgColor = colorRepository.findByIdAndType(categoryRequestDto.getBgColor(), Type.BACKGROUND)
+//                    .orElseThrow(()->new IllegalArgumentException("해당 배경색이 존재하지 않습니다."));
+//        }
 
         Color txtColor = colorRepository.findByIdAndType(categoryRequestDto.getTxtColor(), Type.TEXT)
                 .orElseThrow(() -> new IllegalArgumentException("해당 텍스트 색상이 존재하지 않습니다."));
@@ -56,13 +56,16 @@ public class CategoryService {
 
         if (isImageUploaded) {
             representImageUrl = s3Uploader.upload(image);
-        }  else if (isDefaultImageSelected) {
+        } else if (isDefaultImageSelected) {
             representImageUrl = categoryRequestDto.getDefaultImageUrl();
-        } else {
+        } else if (isBgColorSelected) {
+            representImageUrl = categoryRequestDto.getBgColorImageUrl();
+        }
+        else {
             throw new IllegalArgumentException("이미지를 선택해주세요.");
         }
 
-        Category category = new Category(categoryRequestDto.getName(),representImageUrl, bgColor, txtColor, member);
+        Category category = new Category(categoryRequestDto.getName(),representImageUrl, txtColor, member);
 
         if (!category.getMember().getId().equals(member.getId())) {
             throw new IllegalArgumentException("권한이 없습니다.");
@@ -129,7 +132,7 @@ public class CategoryService {
 
         boolean isDefaultImageSelected = categoryRequestDto.getDefaultImageUrl() != null;
         boolean isImageUploaded = image != null && !image.isEmpty();
-        boolean isBgColorSelected = categoryRequestDto.getBgColor() != null;
+        boolean isBgColorSelected = categoryRequestDto.getBgColorImageUrl() != null;
 
         if ((isBgColorSelected && isDefaultImageSelected) ||
                 (isBgColorSelected && isImageUploaded) ||
@@ -137,10 +140,13 @@ public class CategoryService {
             throw new IllegalArgumentException("배경색, 기본 이미지, 갤러리는 동시에 선택할 수 없습니다.");
         }
 
+//        if (isBgColorSelected) {
+//            Color bgColor = colorRepository.findByIdAndType(categoryRequestDto.getBgColor(), Type.BACKGROUND)
+//                    .orElseThrow(() -> new IllegalArgumentException("해당 배경색이 존재하지 않습니다."));
+//            category.updateBgColor(bgColor);
+//        }
         if (isBgColorSelected) {
-            Color bgColor = colorRepository.findByIdAndType(categoryRequestDto.getBgColor(), Type.BACKGROUND)
-                    .orElseThrow(() -> new IllegalArgumentException("해당 배경색이 존재하지 않습니다."));
-            category.updateBgColor(bgColor);
+            category.updateRepresentImage(categoryRequestDto.getBgColorImageUrl());
         }
 
         if (categoryRequestDto.getTxtColor() != null) {

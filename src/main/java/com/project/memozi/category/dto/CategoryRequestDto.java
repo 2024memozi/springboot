@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 public class CategoryRequestDto {
     private String name;
     private String defaultImageUrl;
-    private Long bgColor;
+//    private Long bgColor;
+    private String bgColorImageUrl;
     private Long txtColor;
 }

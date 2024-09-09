@@ -15,14 +15,14 @@ import java.util.List;
 public class CategoryResponseDto {
     private String name;
     private String representImage;
-    private String bgColor;
+//    private String bgColor;
     private String txtColor;
     private List<MemoResponseDto>memo = new ArrayList<>();
 
     public CategoryResponseDto(Category category) {
         this.name = category.getName();
         this.representImage = category.getRepresentImage();
-        this.bgColor = category.getBgColor() != null ? category.getBgColor().getCode() : null;
+//        this.bgColor = category.getBgColor() != null ? category.getBgColor().getCode() : null;
         this.txtColor = category.getTxtColor() != null ? category.getTxtColor().getCode() : null;
     }
 
