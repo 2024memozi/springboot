@@ -36,14 +36,17 @@ public class Category {
 //    @JoinColumn(name = "bgcolor_id")
 //    private Color bgColor;
 
-    @ManyToOne
-    @JoinColumn(name = "txtcolor_id")
-    private Color txtColor;
+//    @ManyToOne
+//    @JoinColumn(name = "txtcolor_id")
+//    private Color txtColor;
+
+    @Column(nullable = false)
+    private String txtColor;
 
     @OneToMany(mappedBy = "category", cascade = CascadeType.REMOVE)
     private List <Memo> memos;
 
-    public Category(String name, String representImage, Color txtColor, Member member) {
+    public Category(String name, String representImage, String txtColor, Member member) {
         this.name = name;
         this.representImage = representImage;
 //        this.bgColor = bgColor;
@@ -58,7 +61,7 @@ public class Category {
 //        this.bgColor = bgColor;
 //    }
 
-    public void updateTxtColor(Color txtColor){
+    public void updateTxtColor(String txtColor){
         this.txtColor = txtColor;
     }
 

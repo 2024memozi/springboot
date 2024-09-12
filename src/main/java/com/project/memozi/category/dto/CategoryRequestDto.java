@@ -12,5 +12,5 @@ public class CategoryRequestDto {
     private String defaultImageUrl;
 //    private Long bgColor;
     private String bgColorImageUrl;
-    private Long txtColor;
+    private String txtColor;
 }

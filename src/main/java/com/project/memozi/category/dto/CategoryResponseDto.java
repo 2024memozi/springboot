@@ -13,6 +13,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class CategoryResponseDto {
+    private Long categoryId;
     private String name;
     private String representImage;
 //    private String bgColor;
@@ -20,10 +21,12 @@ public class CategoryResponseDto {
     private List<MemoResponseDto>memo = new ArrayList<>();
 
     public CategoryResponseDto(Category category) {
+        this.categoryId = category.getId();
         this.name = category.getName();
         this.representImage = category.getRepresentImage();
 //        this.bgColor = category.getBgColor() != null ? category.getBgColor().getCode() : null;
-        this.txtColor = category.getTxtColor() != null ? category.getTxtColor().getCode() : null;
+//        this.txtColor = category.getTxtColor() != null ? category.getTxtColor().getCode() : null;
+        this.txtColor = category.getTxtColor();
     }
 
     public void setMemo(List<MemoResponseDto> memo){
