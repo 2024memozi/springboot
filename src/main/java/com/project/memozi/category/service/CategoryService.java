@@ -43,14 +43,16 @@ public class CategoryService {
             throw new IllegalArgumentException("배경색, 기본 이미지, 갤러리는 동시에 선택할 수 없습니다.");
         }
 
+        String txtColor = categoryRequestDto.getTxtColor();
+
 //        Color bgColor = null;
 //        if(isBgColorSelected) {
 //            bgColor = colorRepository.findByIdAndType(categoryRequestDto.getBgColor(), Type.BACKGROUND)
 //                    .orElseThrow(()->new IllegalArgumentException("해당 배경색이 존재하지 않습니다."));
 //        }
 
-        Color txtColor = colorRepository.findByIdAndType(categoryRequestDto.getTxtColor(), Type.TEXT)
-                .orElseThrow(() -> new IllegalArgumentException("해당 텍스트 색상이 존재하지 않습니다."));
+//        Color txtColor = colorRepository.findByIdAndType(categoryRequestDto.getTxtColor(), Type.TEXT)
+//                .orElseThrow(() -> new IllegalArgumentException("해당 텍스트 색상이 존재하지 않습니다."));
 
         String representImageUrl;
 
@@ -149,10 +151,13 @@ public class CategoryService {
             category.updateRepresentImage(categoryRequestDto.getBgColorImageUrl());
         }
 
+//        if (categoryRequestDto.getTxtColor() != null) {
+//            Color txtColor = colorRepository.findByIdAndType(categoryRequestDto.getTxtColor(), Type.TEXT)
+//                    .orElseThrow(() -> new IllegalArgumentException("해당 텍스트 색상이 존재하지 않습니다."));
+//            category.updateTxtColor(txtColor);
+//        }
         if (categoryRequestDto.getTxtColor() != null) {
-            Color txtColor = colorRepository.findByIdAndType(categoryRequestDto.getTxtColor(), Type.TEXT)
-                    .orElseThrow(() -> new IllegalArgumentException("해당 텍스트 색상이 존재하지 않습니다."));
-            category.updateTxtColor(txtColor);
+            category.updateTxtColor(categoryRequestDto.getTxtColor());
         }
 
         if (categoryRequestDto.getName() != null && !categoryRequestDto.getName().isEmpty()) {

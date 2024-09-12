@@ -29,10 +29,10 @@ public class CategoryController {
                                          @RequestParam String name,
                                          @RequestParam(required = false) String defaultImageUrl,
                                          @RequestParam(required = false) String bgColorImageUrl,
-                                         @RequestParam Long txtColorId,
+                                         @RequestParam String txtColor,
                                          @AuthenticationPrincipal CustomUserDetails customUserDetails)throws IOException {
         Member member = customUserDetails.getMember();
-        CategoryRequestDto categoryRequestDto = new CategoryRequestDto(name,defaultImageUrl,bgColorImageUrl,txtColorId);
+        CategoryRequestDto categoryRequestDto = new CategoryRequestDto(name,defaultImageUrl,bgColorImageUrl,txtColor);
         CategoryResponseDto categoryResponseDto = categoryService.addCategory(image, categoryRequestDto, member);
         return ResponseEntity.ok(categoryResponseDto);
     }
@@ -57,10 +57,10 @@ public class CategoryController {
                                                              @RequestParam String name,
                                                              @RequestParam(required = false) String defaultImageUrl,
                                                              @RequestParam(required = false) String bgColorImageUrl,
-                                                             @RequestParam(required = false) Long txtColorId,
+                                                             @RequestParam(required = false) String txtColor,
                                                              @AuthenticationPrincipal CustomUserDetails customUserDetails)throws IOException{
         Member member = customUserDetails.getMember();
-        CategoryRequestDto categoryRequestDto = new CategoryRequestDto(name, defaultImageUrl, bgColorImageUrl, txtColorId);
+        CategoryRequestDto categoryRequestDto = new CategoryRequestDto(name, defaultImageUrl, bgColorImageUrl, txtColor);
         CategoryResponseDto categoryResponseDto = categoryService.updateCategory(image, categoryId, categoryRequestDto, member);
         return ResponseEntity.ok(categoryResponseDto);
     }
