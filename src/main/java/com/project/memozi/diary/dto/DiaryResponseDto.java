@@ -13,6 +13,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class DiaryResponseDto {
+    private Long diaryId;
     private String title;
     private String content;
     private List<String> images = new ArrayList<>();
@@ -20,6 +21,7 @@ public class DiaryResponseDto {
     private LocalDate createdAt;
 
     public DiaryResponseDto(Diary diary){
+        this.diaryId = diary.getId();
         this.title = diary.getTitle();
         this.content = diary.getContent();
         this.images = diary.getImages();
