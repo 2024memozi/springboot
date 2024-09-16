@@ -15,6 +15,7 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 @NoArgsConstructor
 public class MemoResponseDto {
+    private Long memoId;
     private String title;
     private String content;
     private String dayOfWeek;
@@ -23,6 +24,7 @@ public class MemoResponseDto {
     private LocalDate updatedAt;
 
     public MemoResponseDto(Memo memo){
+        this.memoId = memo.getId();
         this.title = memo.getTitle();
         this.content = memo.getContent();
         this.dayOfWeek = memo.getDayOfWeek();
