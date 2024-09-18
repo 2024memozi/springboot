@@ -15,7 +15,7 @@ public interface CategoryRepository extends JpaRepository<Category, Long> {
     List<Category> findAllByMember(Member member);
     Optional<Category> findByIdAndMember(Long categoryId, Member member);
 
-    @Query("SELECT DISTINCT c FROM Category c JOIN c.memos m WHERE c.member = :member AND (c.name LIKE %:query% OR m.content LIKE %:query%)")
+    @Query("SELECT DISTINCT c FROM Category c JOIN c.memos m LEFT JOIN m.checkBoxes cb WHERE c.member = :member AND (c.name LIKE %:query% OR m.content LIKE %:query% OR cb.content LIKE %:query%)")
     List<Category> searchByCategoryNameOrMemoContent(@Param("query") String query, @Param("member") Member member);
 
 }

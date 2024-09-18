@@ -17,12 +17,10 @@ public class CategorySearchResponseDto {
     private int count;
     private List<MemoResponseDto> memos;
 
-    public CategorySearchResponseDto(Category category){
+    public CategorySearchResponseDto(Category category,List<MemoResponseDto> filteredMemos){
         this.name = category.getName();
-        this.count = category.getMemos().size();
-        this.memos = category.getMemos().stream()
-                .map(MemoResponseDto::new)
-                .collect(Collectors.toList());
+        this.count = filteredMemos.size();
+        this.memos = filteredMemos;
     }
 
     public void setMemoCount(int count){
