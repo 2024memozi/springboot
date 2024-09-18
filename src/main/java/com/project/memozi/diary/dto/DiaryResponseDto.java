@@ -16,6 +16,7 @@ public class DiaryResponseDto {
     private Long diaryId;
     private String title;
     private String content;
+    private String location;
     private List<String> images = new ArrayList<>();
     private String dayOfWeek;
     private LocalDate createdAt;
@@ -24,6 +25,7 @@ public class DiaryResponseDto {
         this.diaryId = diary.getId();
         this.title = diary.getTitle();
         this.content = diary.getContent();
+        this.location = diary.getLocation();
         this.images = diary.getImages();
         this.dayOfWeek = diary.getDayOfWeek();
         this.createdAt = diary.getCreatedAt();

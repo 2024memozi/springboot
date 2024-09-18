@@ -226,9 +226,11 @@ public class CategoryService {
     public List<CategorySearchResponseDto> search (String query, Member member){
         List<Category> categories = categoryRepository.searchByCategoryNameOrMemoContent(query, member);
         return categories.stream().map(category->{
-            CategorySearchResponseDto categorySearchResponseDto = new CategorySearchResponseDto(category);
-            categorySearchResponseDto.setMemoCount(category.getMemos().size());
-            return categorySearchResponseDto;
+            List<MemoResponseDto> filteredMemos = category.getMemos().stream()
+                    .filter(memo -> memo.getContent().contains(query) || memo.getCheckBoxes().stream().anyMatch(cb -> cb.getContent().contains(query)))
+                    .map(MemoResponseDto::new)
+                    .collect(Collectors.toList());
+            return new CategorySearchResponseDto(category,filteredMemos);
         }).collect(Collectors.toList());
     }
 }
