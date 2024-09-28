@@ -54,6 +54,7 @@ public class Diary extends TimeStamped {
     public Diary(DiaryRequestDto diaryRequestDto, Member member){
         this.title = diaryRequestDto.getTitle();
         this.content = diaryRequestDto.getContent();
+        this.location = diaryRequestDto.getLocation();
         this.member = member;
     }
 
