@@ -33,11 +33,13 @@ public class KakaoController {
     }
 
     @DeleteMapping("/deleteMember")
-    public ResponseEntity<?> deleteMember (@AuthenticationPrincipal CustomUserDetails customUserDetails, OAuth2AuthenticationToken oAuth2AuthenticationToken){
-        String accessToken = customOAuth2UserService.getAccessToken(oAuth2AuthenticationToken);
-        if(accessToken != null){
-            kakaoService.deleteMember(customUserDetails.getMember(), accessToken);
+    public ResponseEntity<?> deleteMember (@AuthenticationPrincipal CustomUserDetails customUserDetails, @RequestBody Map<String, String> body){
+
+        String accessToken = body.get("accessToken");
+        if (accessToken == null || accessToken.isEmpty()) {
+            return new ResponseEntity<>("카카오 Access Token이 필요합니다.", HttpStatus.BAD_REQUEST);
         }
+        kakaoService.deleteMember(customUserDetails.getMember(), accessToken);
         return ResponseEntity.ok("탈퇴하였습니다");
     }
 }
