@@ -1,6 +1,7 @@
 package com.project.memozi.kakao.entity;
 
 import com.project.memozi.category.entity.Category;
+import com.project.memozi.diary.entity.Diary;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -29,5 +30,8 @@ public class Member {
 
     @OneToMany(mappedBy = "member", cascade = CascadeType.REMOVE)
     private List<Category> categories;
+
+    @OneToMany(mappedBy = "member", cascade = CascadeType.REMOVE)
+    private List<Diary> diaries;
 
 }
