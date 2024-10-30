@@ -91,7 +91,30 @@ public class CategoryTest {
     }
 
     @Test
+    void 카테고리_수정(){
+        // Given
+        Category category = new Category("정현진의 투두리스트", "첫번째 이미지", "#000000", member);
+        Category savedCategory = categoryRepository.save(category);
+
+        // When
+        savedCategory.updateName("정현진의 내일 할 일");
+        savedCategory.updateRepresentImage("수정된 이미지");
+        savedCategory.updateTxtColor("#ffffff");
+        categoryRepository.save(savedCategory);
+
+        // Then
+        Optional<Category> result = categoryRepository.findById(savedCategory.getId());
+
+        assertTrue(result.isPresent(), "카테고리가 존재하지 않습니다.");
+        assertEquals("정현진의 내일 할 일", result.get().getName(), "카테고리 이름 수정실패");
+        assertEquals("수정된 이미지", result.get().getRepresentImage(), "이미지 수정실패.");
+        assertEquals("#ffffff", result.get().getTxtColor(), "텍스트 색상 수정실패");
+
+    }
+
+    @Test
     void 카테고리_삭제(){
+        // Given
         Category category = new Category("정현진의 투두리스트", "첫번째 이미지", "#000000", member);
         Category savedCategory = categoryRepository.save(category);
 
