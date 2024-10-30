@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -50,5 +51,19 @@ public class CategoryRepositoryTest {
         assertEquals(2, categories.size());
         assertTrue(categories.stream().anyMatch(c -> c.getName().equals("투두리스트")));
         assertTrue(categories.stream().anyMatch(c -> c.getName().equals("오늘 할 일")));
+    }
+
+    @Test
+    void 카테고리_상세조회(){
+        // Given
+        Category category = new Category("정현진의 투두리스트", "첫번째 이미지", "#000000", member);
+        Category savedCategory = categoryRepository.save(category);
+
+        // When
+        Optional<Category> result = categoryRepository.findByIdAndMember(savedCategory.getId(), member);
+
+        // Then
+        assertTrue(result.isPresent());
+        assertEquals(savedCategory.getId(), result.get().getId(), "본인의 카테고리가 아닙니다.");
     }
 }
