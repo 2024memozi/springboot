@@ -1,4 +1,4 @@
-package com.project.memozi.category.repository;
+package com.project.memozi.category;
 
 import com.project.memozi.category.entity.Category;
 import com.project.memozi.kakao.entity.Member;

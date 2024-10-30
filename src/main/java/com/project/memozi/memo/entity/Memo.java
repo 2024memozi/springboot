@@ -61,6 +61,13 @@ public class Memo extends TimeStamped {
         this.member = member;
     }
 
+    public Memo(String title, String content, Category category, Member member) {
+        this.title = title;
+        this.content = content;
+        this.category = category;
+        this.member = member;
+    }
+
 //    public void update(MemoRequestDto memoRequestDto){
 //        if (memoRequestDto.getTitle() != null) {
 //            this.title = memoRequestDto.getTitle();

@@ -1,7 +1,7 @@
 package com.project.memozi.memo.service;
 
 import com.project.memozi.category.entity.Category;
-import com.project.memozi.category.repository.CategoryRepository;
+import com.project.memozi.category.CategoryRepository;
 import com.project.memozi.checkbox.dto.CheckBoxRequestDto;
 import com.project.memozi.checkbox.entity.CheckBox;
 import com.project.memozi.checkbox.repository.CheckBoxRepository;

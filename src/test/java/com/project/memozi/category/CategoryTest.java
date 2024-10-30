@@ -1,8 +1,10 @@
-package com.project.memozi.category.repository;
+package com.project.memozi.category;
 
 import com.project.memozi.category.entity.Category;
 import com.project.memozi.kakao.entity.Member;
 import com.project.memozi.kakao.repository.MemberRepository;
+import com.project.memozi.memo.entity.Memo;
+import com.project.memozi.memo.repository.MemoRepository;
 import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -14,16 +16,20 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 @DataJpaTest
 @Transactional
-public class CategoryRepositoryTest {
+public class CategoryTest {
     @Autowired
     private CategoryRepository categoryRepository;
     private Member member;
 
     @Autowired
     private MemberRepository memberRepository;
+
+    @Autowired
+    private MemoRepository memoRepository;
 
     @BeforeEach
     void 회원로그인(){
@@ -65,5 +71,35 @@ public class CategoryRepositoryTest {
         // Then
         assertTrue(result.isPresent());
         assertEquals(savedCategory.getId(), result.get().getId(), "본인의 카테고리가 아닙니다.");
+    }
+
+    @Test
+    void 검색() {
+        // Given
+        Category category = new Category("정현진의 투두리스트", "첫번째 이미지", "#000000", member);
+        categoryRepository.save(category);
+
+        Memo memo = new Memo("Kworld 프로젝트", "얼른끝내고 취업하고싶다.", category, member);
+        memoRepository.save(memo);
+
+        // When
+        List<Category> result = categoryRepository.searchByCategoryNameOrMemoContent("얼른", member);
+
+        // Then
+        assertEquals(1, result.size(), "검색 결과의 개수가 맞지 않습니다.");
+        assertTrue(result.get(0).getName().contains("현진"), "카테고리 이름이 올바르지 않습니다.");
+    }
+
+    @Test
+    void 카테고리_삭제(){
+        Category category = new Category("정현진의 투두리스트", "첫번째 이미지", "#000000", member);
+        Category savedCategory = categoryRepository.save(category);
+
+        // When
+        categoryRepository.delete(savedCategory);
+        Optional<Category> result = categoryRepository.findById(savedCategory.getId());
+
+        // Then
+        assertFalse(result.isPresent());
     }
 }
