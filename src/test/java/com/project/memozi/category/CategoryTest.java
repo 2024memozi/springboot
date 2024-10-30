@@ -8,11 +8,13 @@ import com.project.memozi.memo.repository.MemoRepository;
 import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Timeout;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -124,5 +126,31 @@ public class CategoryTest {
 
         // Then
         assertFalse(result.isPresent());
+    }
+
+    @Test
+    @Timeout(value = 1, unit = TimeUnit.SECONDS)
+    void 대량_카테고리_조회_성능_테스트() {
+        // Given
+        for (int i = 1; i <= 10000; i++) {
+            categoryRepository.save(new Category("카테고리" + i, "이미지" + i, "#000000", member));
+        }
+
+        // Start measuring time
+        long startTime = System.nanoTime();
+
+        // When
+        List<Category> categories = categoryRepository.findAllByMember(member);
+
+        // End measuring time
+        long endTime = System.nanoTime();
+
+        // Then
+        assertEquals(10000, categories.size(), "1000개의 카테고리가 조회되지 않았습니다.");
+
+        long elapsedTime = (endTime - startTime) / 1_000_000;  // ns -> ms
+        System.out.println("조회에 걸린 시간: " + elapsedTime + " ms");
+
+        assertTrue(elapsedTime < 10000, "조회 시간이 1초를 초과했습니다.");
     }
 }
