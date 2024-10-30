@@ -1,14 +1,12 @@
 package com.project.memozi.kakao.controller;
 
 import com.project.memozi.kakao.entity.Member;
-import com.project.memozi.kakao.service.CustomOAuth2UserService;
 import com.project.memozi.kakao.service.CustomUserDetails;
 import com.project.memozi.kakao.service.KakaoService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.web.bind.annotation.*;
 import java.util.Map;
 
@@ -17,7 +15,6 @@ import java.util.Map;
 @CrossOrigin(origins = "http://localhost:3000", allowedHeaders = "*")
 public class KakaoController {
     private final KakaoService kakaoService;
-    private final CustomOAuth2UserService customOAuth2UserService;
 
     @PostMapping("/oauth2/kakao/login")
     public ResponseEntity<Map<String, String>> handleKakaoLogin (@RequestBody Map<String, String> body){
