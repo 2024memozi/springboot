@@ -44,7 +44,7 @@ public class MemoTest {
     }
 
     @Test
-    void 메모_작성() {
+    void 메모_작성(){
         // Given
         Memo memo = new Memo("제목", "내용", category, member);
 
@@ -56,4 +56,20 @@ public class MemoTest {
         assertEquals("제목", savedMemo.getTitle(), "메모 제목이 일치하지 않습니다.");
         assertEquals("내용", savedMemo.getContent(), "메모 내용이 일치하지 않습니다.");
     }
+
+    @Test
+    void 메모_전체조회(){
+        // Given
+        Memo memo = new Memo("제목", "내용", category, member);
+
+        // When
+        Memo savedMemo = memoRepository.save(memo);
+
+        // Then
+        assertNotNull(savedMemo.getId(), "메모가 저장되지 않았습니다.");
+        assertEquals("제목", savedMemo.getTitle(), "메모 제목이 일치하지 않습니다.");
+        assertEquals("내용", savedMemo.getContent(), "메모 내용이 일치하지 않습니다.");
+    }
+
+
 }
