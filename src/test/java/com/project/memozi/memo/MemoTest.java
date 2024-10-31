@@ -12,6 +12,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
+import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -58,7 +60,7 @@ public class MemoTest {
     }
 
     @Test
-    void 메모_전체조회(){
+    void 메모_상세조회(){
         // Given
         Memo memo = new Memo("제목", "내용", category, member);
 
@@ -71,5 +73,16 @@ public class MemoTest {
         assertEquals("내용", savedMemo.getContent(), "메모 내용이 일치하지 않습니다.");
     }
 
+    @Test
+    void 메모_전체조회(){
+        // Given
+        memoRepository.save(new Memo("첫번째 메모", "첫번째 내용", category, member));
+        memoRepository.save(new Memo("두번째 메모", "두번째 내용", category, member));
 
+        // When
+        List<Memo> memos = memoRepository.findAll();
+
+        // Then
+        assertEquals(2, memos.size(), "2개의 메모가 조회되지 않았습니다.");
+    }
 }
