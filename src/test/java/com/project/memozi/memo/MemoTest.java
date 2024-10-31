@@ -14,8 +14,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 @DataJpaTest
 @Transactional
@@ -84,5 +83,28 @@ public class MemoTest {
 
         // Then
         assertEquals(2, memos.size(), "2개의 메모가 조회되지 않았습니다.");
+    }
+
+    @Test
+    void 대량_메모_조회_성능_테스트(){
+        // Given
+        for (int i = 1; i <= 1000; i++) {
+            memoRepository.save(new Memo("제목" + i, "내용" + i, category, member));
+        }
+
+        long startTime = System.nanoTime();
+
+        // When
+        List<Memo> memos = memoRepository.findAll();
+
+        long endTime = System.nanoTime();
+
+        // Then
+        assertEquals(1000, memos.size(), "1000개의 메모가 조회되지 않았습니다.");
+
+        long elapsedTime = (endTime - startTime) / 1_000_000;
+        System.out.println("조회에 걸린 시간: " + elapsedTime + " ms");
+
+        assertTrue(elapsedTime < 1000, "조회 시간이 1초를 초과했습니다.");
     }
 }
