@@ -4,17 +4,25 @@ import com.project.memozi.category.CategoryRepository;
 import com.project.memozi.category.entity.Category;
 import com.project.memozi.kakao.entity.Member;
 import com.project.memozi.kakao.repository.MemberRepository;
+import com.project.memozi.memo.dto.MemoRequestDto;
+import com.project.memozi.memo.dto.MemoResponseDto;
 import com.project.memozi.memo.entity.Memo;
 import com.project.memozi.memo.repository.MemoRepository;
+import com.project.memozi.memo.service.MemoService;
 import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.boot.test.mock.mockito.SpyBean;
 
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 @DataJpaTest
 @Transactional
@@ -30,6 +38,9 @@ public class MemoTest {
 
     private Member member;
     private Category category;
+
+    @MockBean
+    private MemoService memoService;
 
     @BeforeEach
     void 회원로그인(){
@@ -107,4 +118,40 @@ public class MemoTest {
 
         assertTrue(elapsedTime < 1000, "조회 시간이 1초를 초과했습니다.");
     }
+
+//    @Test
+//    void 메모_수정() {
+//        // Given
+//        Memo memo = new Memo("제목", "내용", category, member);
+//        Memo savedMemo = memoRepository.save(memo);
+//        MemoRequestDto memoRequestDto = new MemoRequestDto("수정된 제목", "수정된 내용", null);
+//
+//        // 정확한 값 사용
+//        when(memoRepository.findByIdAndCategoryId(savedMemo.getId(), category.getId()))
+//                .thenReturn(Optional.of(memo));
+//
+//        // When
+//        MemoResponseDto result = memoService.updateMemo(category.getId(), savedMemo.getId(), memoRequestDto, member);
+//
+//        // Then
+//        assertNotNull(result);
+//        assertEquals("수정된 제목", result.getTitle());
+//        assertEquals("수정된 내용", result.getContent());
+//    }
+//
+//    @Test
+//    void 메모_삭제() {
+//        // Given
+//        Memo memo = new Memo("제목", "내용", category, member);
+//        Memo savedMemo = memoRepository.save(memo);
+//
+//        when(memoRepository.findByIdAndCategoryId(savedMemo.getId(), category.getId()))
+//                .thenReturn(Optional.of(memo));
+//
+//        // When
+//        memoService.deleteMemo(category.getId(), savedMemo.getId(), member);
+//
+//        // Then
+//        verify(memoRepository, times(1)).delete(memo);
+//    }
 }
