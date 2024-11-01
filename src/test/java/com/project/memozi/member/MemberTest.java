@@ -1,4 +1,4 @@
-package com.project.memozi.member.repository;
+package com.project.memozi.member;
 
 import com.project.memozi.kakao.entity.Member;
 import com.project.memozi.kakao.repository.MemberRepository;
@@ -13,7 +13,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @DataJpaTest
 @Transactional
-public class MemberRepositoryTest {
+public class MemberTest {
 
     @Autowired
     private MemberRepository memberRepository;
