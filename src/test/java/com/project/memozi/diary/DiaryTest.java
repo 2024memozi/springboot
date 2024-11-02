@@ -121,10 +121,24 @@ public class DiaryTest {
 
         DiaryResponseDto updatedDiary = diaryService.updateDiary(images, savedDiary.getId(), updateRequest, member);
 
-        assertNotNull(updatedDiary, "수정된 다이어리가 반환되지 않았습니다.");
-        assertEquals(savedDiary.getId(), updatedDiary.getDiaryId(), "다이어리 ID가 일치하지 않습니다.");
+        assertNotNull(updatedDiary, "수정에 실패하였습니다.");
+        assertEquals(savedDiary.getId(), updatedDiary.getDiaryId(), "다이어리가 존재하지 않습니다.");
         assertEquals("공부중", updatedDiary.getTitle());
         assertEquals("스프링부트", updatedDiary.getContent());
         assertEquals("카페", updatedDiary.getLocation());
+    }
+
+    @Test
+    void 다이어리_삭제() {
+        // Given
+        Diary diary = new Diary("취업", "취업하고싶다", "집", new ArrayList<>(), "월요일", member);
+        Diary savedDiary = diaryRepository.save(diary);
+
+        // When
+        diaryService.deleteDiary(savedDiary.getId(), member);
+
+        // Then
+        Optional<Diary> foundDiary = diaryRepository.findById(savedDiary.getId());
+        assertTrue(foundDiary.isEmpty(), "삭제에 실패하였습니다.");
     }
 }
