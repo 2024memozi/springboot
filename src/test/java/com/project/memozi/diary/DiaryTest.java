@@ -20,9 +20,9 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -85,7 +85,7 @@ public class DiaryTest {
     }
 
     @Test
-    void 다이어리_전체조회() {
+    void 다이어리_전체_조회() {
         Diary diary1 = new Diary(null, "첫번째 다이어리", "내용1", null, new ArrayList<>(), null, member);
         Diary diary2 = new Diary(null, "두번째 다이어리", "내용2", null, new ArrayList<>(), null, member);
 
@@ -94,6 +94,18 @@ public class DiaryTest {
 
         List<Diary> diaries = diaryRepository.findAll();
 
-        assertEquals(2, diaries.size(), "2개의 다이어리가 조회되지 않았습니다.");
+        assertEquals(2, diaries.size(), "Error.");
+    }
+
+    @Test
+    void 다이어리_상세_조회() {
+        Diary diary = new Diary(null, "첫번째 다이어리", "내용1", null, new ArrayList<>(), null, member);
+        Diary savedDiary = diaryRepository.save(diary);
+
+        Optional<Diary> foundDiary = diaryRepository.findById(savedDiary.getId());
+
+        assertTrue(foundDiary.isPresent(), "다이어리가 존재하지 않습니다.");
+        assertEquals("첫번째 다이어리", foundDiary.get().getTitle(), "다이어리 제목이 일치하지 않습니다.");
+        assertEquals("내용1", foundDiary.get().getContent(), "다이어리 내용이 일치하지 않습니다.");
     }
 }
