@@ -71,4 +71,13 @@ public class Diary extends TimeStamped {
     public void clearImages() {
         this.images.clear();
     }
+
+    public Diary(String title, String content, String location, List<String> images, String dayOfWeek, Member member) {
+        this.title = title;
+        this.content = content;
+        this.location = location;
+        this.images = images;
+        this.dayOfWeek = dayOfWeek;
+        this.member = member;
+    }
 }

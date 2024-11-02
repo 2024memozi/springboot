@@ -86,8 +86,8 @@ public class DiaryTest {
 
     @Test
     void 다이어리_전체_조회() {
-        Diary diary1 = new Diary(null, "첫번째 다이어리", "내용1", null, new ArrayList<>(), null, member);
-        Diary diary2 = new Diary(null, "두번째 다이어리", "내용2", null, new ArrayList<>(), null, member);
+        Diary diary1 = new Diary("첫번째 다이어리", "내용1", null, new ArrayList<>(), "월요일", member);
+        Diary diary2 = new Diary("두번째 다이어리", "내용2", null, new ArrayList<>(), "화요일", member);
 
         diaryRepository.save(diary1);
         diaryRepository.save(diary2);
@@ -99,13 +99,32 @@ public class DiaryTest {
 
     @Test
     void 다이어리_상세_조회() {
-        Diary diary = new Diary(null, "첫번째 다이어리", "내용1", null, new ArrayList<>(), null, member);
+        Diary diary = new Diary("첫번째 다이어리", "내용1", null, new ArrayList<>(), "월요일", member);
         Diary savedDiary = diaryRepository.save(diary);
 
         Optional<Diary> foundDiary = diaryRepository.findById(savedDiary.getId());
 
         assertTrue(foundDiary.isPresent(), "다이어리가 존재하지 않습니다.");
+        assertEquals(savedDiary.getId(), foundDiary.get().getId(), "다이어리 ID가 일치하지 않습니다.");
         assertEquals("첫번째 다이어리", foundDiary.get().getTitle(), "다이어리 제목이 일치하지 않습니다.");
         assertEquals("내용1", foundDiary.get().getContent(), "다이어리 내용이 일치하지 않습니다.");
+    }
+
+    @Test
+    void 다이어리_수정() throws IOException {
+        Diary diary = new Diary("취업", "취업하고싶다", "집", new ArrayList<>(), "월요일", member);
+        Diary savedDiary = diaryRepository.save(diary);
+
+        DiaryRequestDto updateRequest = new DiaryRequestDto("공부중", "스프링부트", "카페");
+        List<MultipartFile> images = new ArrayList<>();
+        when(s3Uploader.upload(any(MultipartFile.class))).thenReturn("https://수정된이미지.jpg");
+
+        DiaryResponseDto updatedDiary = diaryService.updateDiary(images, savedDiary.getId(), updateRequest, member);
+
+        assertNotNull(updatedDiary, "수정된 다이어리가 반환되지 않았습니다.");
+        assertEquals(savedDiary.getId(), updatedDiary.getDiaryId(), "다이어리 ID가 일치하지 않습니다.");
+        assertEquals("공부중", updatedDiary.getTitle());
+        assertEquals("스프링부트", updatedDiary.getContent());
+        assertEquals("카페", updatedDiary.getLocation());
     }
 }
