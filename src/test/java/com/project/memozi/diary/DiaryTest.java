@@ -83,4 +83,17 @@ public class DiaryTest {
         assertEquals(content, savedDiary.getContent());
         assertEquals(location, savedDiary.getLocation());
     }
+
+    @Test
+    void 다이어리_전체조회() {
+        Diary diary1 = new Diary(null, "첫번째 다이어리", "내용1", null, new ArrayList<>(), null, member);
+        Diary diary2 = new Diary(null, "두번째 다이어리", "내용2", null, new ArrayList<>(), null, member);
+
+        diaryRepository.save(diary1);
+        diaryRepository.save(diary2);
+
+        List<Diary> diaries = diaryRepository.findAll();
+
+        assertEquals(2, diaries.size(), "2개의 다이어리가 조회되지 않았습니다.");
+    }
 }
